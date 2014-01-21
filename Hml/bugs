@@ -1,0 +1,24 @@
+1/1/2-014
+	private interface Value	{} // tagging interface
+		doesn't work correctly (the close brace is not recognized)
+
+	*|*_text-to-replace_*|*_replacement-text_*|*
+		doesn't work (should it?)
+
+1/13/2014	A // comment at the end of a line that holds a <include> causes
+			at least some of the follwoing lines to be ignored. For example,
+			in hmldoc.hml, this input causes the <endnotes> and
+			<index> elements to be ignored:
+
+	<include src="/Users/allen/config/hml.macros" title="" first-line="1"> // Override line-number continuation from the previous <include> of this file.
+
+	<endnotes>
+	= Notes = notes
+	</endnotes>
+
+	<index>
+	= Index = index
+	</index>
+
+1/14/2014  The tag processor should print an error message if the end
+		tag is missing. Currently, the unterminated tag is silently ignored.

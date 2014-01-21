@@ -1,0 +1,4012 @@
+<head>
+	<title>HML -- Allen Holub</title>
+	<style>
+		.pending { color: rgb(180,180,180); font-style:italic; }
+		.NB      { border: 1px solid red; color: red; margin: 1em 1em 1em 1em; width:5in;
+	</style>
+</head>
+<macro>
+'<pending>'<div class="pending">'
+'</pending>'</div>'
+'<NB>'<div class="NB">'
+'</NB>'</div>'
+</macro>
+
+<span style="font-size:40pt; font-weight:bold;">HML</span>
+<br>
+<span style="font-size:20pt; font-weight:bold;">The Handy Markup Language</span>
+<br>
+<br>
+<br>
+<span style="font-size:14pt; font-style:italic;">Allen Holub</span>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<NB>
+Put notes for me into a `<NB>`...`</NB>` element,
+and it will show up in red, just like the current box.
+</NB>
+
+<toc style="width:6in;">Contents</toc>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+= HML
+HML (the {i Handy Markup Language}) is a tool that
+vastly simplifies electronic document production for the web or e-books.
+It's useful for most documents, and it also provides facilities particularly useful for writing about software.
+You can download the HML processor and run it locally, or use an online version.
+	
+If you know [http://daringfireball.net/projects/markdown/ _Markdown_], HML is like that 
+on steroids---vastly more capable and, unlike {i Markdown}, easily customizable.
+
+HML converts simple marked-up input into complex HTML output that:
+* Displays in a browser
+* Imports into many word processors
+* Easily converts into an e-book by dragging into
+	[http://manual.calibre-ebook.com/conversion.html Calibre]
+
+In addition to simplifying common things like lists and tables,
+HML also provides automatic section, listing, table,
+and figure numbering---with symbolic references to these document elements.
+If you add a section, for example, not only do section-numbers in headings update
+automatically in the HML output, but so do explicit section number references.
+It also produces a Table of Contents and an Index for you, 
+and makes it easy to add end notes to your document.
+The current document is written using HML, and provides an example of what it can do.
+
+HML excels at displaying code. It properly formats example code in the text
+and makes it easy to write about the code, even when you actively change that code.
+HML can pull listings from outside the document, assign line numbers,
+and reference declarations, etc., symbolically---just as with section numbers.
+When the code changes, line-number references (in both listing and body text)
+re-point automatically to the new location.
+When you change code, the document changes dynamically to reflect the new version.
+You can modify existing code, add new listings, move listings around,
+and all references in the document automatically adjust.
+All references to particular listings, tables,
+sections, and line numbers in a listing,
+are hyperlinks: click on a reference to navigate to the referenced item.
+
+HML is well tested, and has evolved through heavy use by its original author,
+Allen Holub, who wrote all of {amazon 159059388X Holub on Patterns} and
+{amazon 1893115100 Taming Java Threads} using HML,
+as well as dozens of online-magazine articles
+for venues like [http://www.drdobbs.com DDJ].
+This document is written in HML, which is actually something of a worst case.
+The HML processor is written in Java, so it's fully portable across all platforms.
+
+HML outputs a single {i .html} file, with no external dependencies, so you can save it locally,
+e-mail it, or view it offline.
+
+<h0 class="part"> Part I: Core Features</h0>
+
+=/ HML vs. HTML
+
+HML documents require no HTML.
+Nonetheless, HML and HTML coexist nicely in the same document,
+and documents of any complexity typically use a little of both. HML enhances, not replaces, HTML.
+
+Similarly, HML provides all the CSS styling a nice-looking document needs. 
+However, it's easy to add custom CSS and change the built-in CSS---for
+all HML documents, or for a single document.
+
+<pending>
+=/ HML in the cloud (no installation required)
+An online version ({i HML In The Cloud}) converts HML documents to HTML without requiring
+that you install anything locally. Go to http://???? and drag an HML file to the "Drop here" box.
+The output HTML pops up in a new tab. Save it to your local machine using the
+browser's file->save command.
+
+The only issue with HML in the cloud is pulling in listings, because the cloud
+version has no direct access to your local hard drive. The solution is to use Dropbox.
+The {section dropbox} explains how to do that.
+
+Dropbox creates a folder on the local hard drive (called {i Dropbox}).
+Dropbox instantly, copies any file you put in that folder or its subfolders to
+a private cloud-based mirror of the local Dropbox folder.
+HML in the cloud can pull files from the cloud-based Dropbox
+mirror instead of the local hard disk.
+
+</pending>
+
+=/ Local installation
+
+{index installation}
+To work offline, download the HML processor and run it locally from the command line.
+The HML processor is a Java application, so install Java first.  
+Find instructions for a Windows install
+[http://www.java.com/en/download/help/windows_manual_download.xml here].
+
+Macs come with Java as part of the OSX install.
+This version works just fine, but you can download a newer version from Oracle.
+(See [http://www.java.com/en/download/help/mac_install.xml here], and
+[http://www.java.com/en/download/faq/java_mac.xml here] for directions).
+
+Finally, download the HML processor from
+[https://holub.com/private/hml.jar here].
+The download is a standalone {i .jar} file you can put anywhere.
+There's no need to unpack or otherwise ```install''' it.
+Similarly, the HML processor doesn't use any magic folders (e.g. "~/Library"
+on the mac) or the Windows registry. To remove it from your disk, just
+delete {i hml.jar}.
+
+
+== Running the HML processor locally ==
+
+To execute the HML processor, you actually execute {i java} and tell java to run the processor,
+all from a Mac terminal window or a Windows console window. 
+* On Mac OSX, run the {i Applications->Utilities->Terminal.app} program to bring up a console window.
+* On Windows, launch the {i Start->All Programs->Accessories->Command Prompt} program.
+
+{index running, from command line}
+{index executing}
+{index command line}
+The simplest scenario is:
+
+,	> java -jar /my/path/to/hml.jar myInputFile.hml > myOutputFile.html
+
+You can specify multiple input files.
+The processor reads them in the order that you list them
+on the command line, and sends the output to standard output.
+
+You can also redirect input into the processor,
+which is occasionally handy if you're running HML as part of a processing chain:
+
+,	> myCustomProcessor myInput | java -jar /my/path/to/hml.jar > myOutputFile.html
+
+=/ Code vs. text
+
+The HML processor breaks the source document into three types of
+input and handles each differently:
+*	A {i code snippet} (see {section snippet}) is a small chunk of back-quote-delimited source code ({c \`like this\`})
+that's embedded in your text `like this`. Code snippets display literally---exactly as they appear in the input (less the quotes).
+*	A {i code block} is a larger (typically multi-line) block of source code delimited by a `<pre>`
+	or `<listing>` element ({section advanced-code}), or by lines that start with a comma ({section easy-code})
+*	Everything else is a _text block_.
+
+Most of what follows describes processing that applies only to text blocks.
+Unless the text says otherwise, these features don't work in code snippets or code blocks.
+
+=/ Comments
+
+HML recognizes three styles of comments.
+
+|	`<`[!]`!= ... =!`[!]`>`
+				| {index comments, `<`[!]`!=...=!`[!]`>`}
+				  {index `<`[!]`!=...=!`[!]`>` comment} 
+				  everything between a `<`[!]`!=` and a `=!`[!]`>` is ignored.
+				  This is different from an HTML comment (`<!- ... ->`),
+				  which just passes through to the output.
+				  The HML processor discards 
+				  comments before it does any processing, as
+				  if it weren't in the file at all. You can use this
+				  mechanism to "comment out" parts of the input file
+				  to make it easier to find bugs.
+				  <p>
+				  HML recognizes this sort of comment anywhere it occurs,
+				  even in code blocks
+				  and snippets, which is why they look so weird.
+				  <p>
+				  The comment can span several lines.
+				  Note that HML doesn't delete an end-of-line character
+				  to the right o the close comment, so it treats:
+				  <block>
+				  `above`
+				  `<`[!]`!=`
+				  `    comment`
+				  `=!`[!]`>`
+				  `below`
+				  </block>
+				  like:
+				  <block>
+					`above`
+					`     `
+					`below`
+				  </block>
+				  Since blank lines introduce new paragraphs in HML,
+				  "below" starts a new paragraph.
+				  You can solve that problem with
+				  <block>
+				  `above <`[!]`!=`
+				  `    comment`
+				  `=!`[!]`>`
+				  `below`
+				  </block>
+				  which HML treats as
+				  <block>
+					`above`
+					`below`
+				  </block>
+				  Escape the first character (e.g.,`\<!=` to suppress its
+				  normal meaning.
+				  For example, `\<!=...\=!>` is not treated as a comment.
+				  <p>
+				  Unlike C and Java---and HTML for that matter---comments
+				  _can_ nest, so you can do the following without difficulty:
+				  <block>
+				  `<`[!]`!==`
+				  `    this text goes away`
+				  `    <`[!]`!==`
+				  `       as does this text`
+				  `    ==!`[!]`>`
+				  `    and this`
+				  `==!`[!]`>`
+				  </block>
+				  Standard HTML would have closed the comment with the first end-comment designator,
+				  so the text `and this` would not be part of the comment.
+				  <p>
+				  Bear in mind that HTML comments (`<!--`...`-->`) works just fine, but you can't
+				  use that sort of comment to "comment out" HML directives.
+				  <p>
+				  Finally, HML treats the
+				  `<`[!]`!==`...`==!`[!]`>`
+				  form of comment as a basic component of the document,
+				  on the same level as a code block, so
+				  you can use that form to comment out anything, including a code block. The
+				  following works fine:
+				  <block>
+				  `<`[!]`!==`
+				  `<listing>`
+				  ...
+				  `</listing>`
+				  `==!`[!]`>`
+				  </block>
+|	`// text`	| {index comment, `//...`}{index `//...` comment}The `//` and all text that follows it on the line is discarded.
+				  HML recognizes this comment only in text blocks, not in code.
+				  If nothing is on the input line other than the
+				  comment, HML removes the entire line from the input rather
+				  than leave a blank line.
+				  To have the sequence `//` appear in output text,
+				  prefix the `//` with a backslash (`\// hello` appears
+				  in the output as {i \// hello}).
+				  Alternately, prefix the `//` with a colon
+				  (`://` or more importantly, `http://path`)
+				  display as {i ://} and {i http://path}.
+|	`[* ... *]`	| {index comment, `[*...*]`}
+				  {index `[*...*]` comment}
+				  {index elide text with `[*...*]`}
+				  appears in the output as an ellipsis ([* shouldn't see this *]).
+				  HML recognizes this sort of comment only in text blocks, not in code.
+				  This mechanism provides a convenient way to elide a quote and leave the original
+				  text in place in case you decide to put it back later.
+				  This sort of comment, unlike the `<`[!]`!==`...`==!`[!]`>`
+				  form, works only within a text block.
+				  You can't use it to comment out a code block or a code snippet---only normal
+				  text.
+
+=/ Paragraphs
+
+{index paragraphs}
+Start a paragraph in HML by preceding it with a blank line.
+The first character of the paragraph must be an alphanumeric character, a brace (`{`), bracket (`[`), or open parentheses.
+Put an HTML `<p>` element in front of the paragraph if it starts with something else.
+
+=/ Hyperlinks = hyperlink
+
+{index hyperlinks}
+{index links}
+{index hot links (hyperlinks)}
+HML provides several ways to indicate HTML hyperlinks ({table links}).
+The easiest mechanism is the MediaWiki-style square-bracket approach:
+<block>
+`[http://www.holub.com my web site]`
+</block>
+which displays as [http://www.holub.com my web site].
+The URL comes first, followed by the link's visible text. 
+If you don't specify visible text, HML displays the URL.
+
+<br>
+{index `{link ...}`}
+{index `[http://...]`}
+{index `<http://...>`}
+<p>
+<table-title label="links">Hyperlinks</table-title>
+<table border="1" cellspacing="0" cellpadding="4">
+<tr> <th>Input</th> <th style="width:1in;">Displays as</th> <th>Comment</th> </tr>
+[(]	
+	`{link http://www.holub.com}`<br>
+	`{link www.holub.com}`<br>
+	`[www.holub.com]`<br>
+	`[http://www.holub.com]`<br>
+	`<http://www.holub.com>`
+	<br>
+	<br>
+---
+	`{link www.holub.com `{i some&nbsp;text}`}`<br>
+	`[www.holub.com `{i other&nbsp;text}`]`<br>
+[|] 
+	{link http://www.holub.com}<br>
+	{link www.holub.com}<br>
+	[www.holub.com]<br>
+	[http://www.holub.com]<br>
+	<http://www.holub.com>
+<br>
+<br>
+---
+	{link www.holub.com some text}<br>
+	[www.holub.com other text]<br>
+
+	[|] A hyperlink. If you don't specify visible text, the processor uses the URL.
+		In the multiple-argument form, the {i text} to the right of the href is the visible text of the link.
+		An `http://` is usually added to the href if it's not already there, but
+		the `http://` isn't added when the reference has a '#' or a './' prefix.
+		<p>
+		The `<...>` form always evaluates to the URL as the visible text;
+		it doesn't take a second, visible-text argument, and the URL must start with `http://` or `https://`.
+		<p>
+		A `target="_blank"` attribute (which causes the linked page to display in a new tab) is used unless the
+		URL references an internal anchor (i.e., the URL starts with a `#` instead of a protocol).
+[)]
+
+[(]	`{anchor foo}`
+[|]	{anchor foo}
+[|] Creates an "empty" (invisible) anchor that indicates a target for a link. The example at left evaluates to `<a name="foo"></a>`.
+	You can provide a link to that location by putting a `[#foo]` or `[#foo visible text]` elsewhere in your document, and the browser
+	jumps to the anchor when someone clicks on the link. Note that the `#` is required in the reference. 
+	The following hotlink is specified using 
+	`[#foo go to foo]`
+	[#foo go to foo].
+[)]
+</table>
+
+=/ Boldface, emphasis, and code-font display  = boldfaceEtc
+
+{index boldface}
+{index italics}
+{index emphasis}
+{index fonts, code}
+{index code font}
+HML provides several ways to add boldface and other emphasis to documents
+({table emphasis}).
+You can put text into italics with both `{i text}` and `_text_`.
+The underscore form has a few limitations (discussed in the table),
+so use the brace form if you need to work around those limitations.
+
+Note that the HML processor treats backquote-delimited code snippets
+({section snippet})
+differently than
+the other emphasis mechanisms.
+Unlike `{c xxx}`, HML protects all
+characters in a code snippet from subsequent processing: 
+`&`, `<`, `>`, and quote marks
+{u are} mapped to `&amp;`, `&lt;`, `&gt;`, `&quot;`, and `&apos;` entities in a snippet, but not
+in a `{c xxx}`.
+Spaces in a snippet, but not a `{c xxx}` are replaced by `&nbsp;` entities.
+Consequently, you can use a code snippet to document HTML.
+Finally, code snippets are bracketed by `<nobr>`...`</nobr>`
+to keep the code together on one line.
+
+You can put a literal back-tick in code by "escaping" it with a backslash:
+<code>\\\`not code\\\`</code> prints as \`not code\`.
+Put a backtick in a code block by escaping it the same way.
+
+HML has no backquote equivalents to `{cb x}` and `{ci x}`,
+but you {i can} put a code snippet as the text in any of the forms that
+{table emphasis} shows.
+For example,
+,	{b `code`}
+prints as {b `code`} (boldfaced code font).
+<br>
+{index `{b...}`}
+{index `{i...}`}
+{index `{c...}`}
+{index `{ci...}`}
+{index `{cb...}`}
+{index `{bi...}`}
+{index `{u...}`}
+{index `{s...}`}
+{index `{x...}`}
+{index `_italic_`}
+{index `*bold*`}
+<p>
+<table-title label="emphasis">Adding emphasis</table-title>
+<table border="1" cellspacing="0" cellpadding="4">
+<tr> <th>Input</th> <th style="width:1in;">Displays as</th> <th>Comment</th> </tr>
+[(]		`{b bold}`  `*text*`		[|] {b bold} *text*   
+						[|] Asterisks indicate boldface text
+			(e.g.,`*this is boldface*` ) or in {i macro} form
+			(e.g.,`{b this is boldface}`). The first asterisk must either follow
+			a space or punctuation, or be the first character on a line.
+			The terminating asterisk must either precede a space or punctuation,
+			or be the last character on a line. If these rules are too restrictive
+			(e.g., you want boldface in the middle of a word), use the macro form
+			(`xxx{b bold}xxx`).
+													<p>
+			Text in the * form of the macro must be entirely on one line.
+			The brace version can span several lines.
+			A `\*` (a * prefixed with a backslash) always evaluates to a `*`, regardless of context,
+			so `\*hello\*` prints as \*hello\*.
+[)]
+[(]		`{i italic}` `_text_`	[|]		{i italic} _text_ [|]
+													Same rules as `*bold*`, but italic, A `\_` protects the `_`.
+			The HML processor applies a complex set of rules that distinguish this
+			underscore from the one in subscripts, and gets it right most of the time. 
+			Note that a double underscore means "subscript."
+													[)]
+[(]		`{bi bold italic }`  [|]	{bi bold italic} [|] [)]
+
+[(]		`{u underline text}` [|]	{u underline text}[|] [)]
+[(]		`{s strikeout text}` [|]	{s strikeout text}[|] Uses styles, not &lt;strike&gt; tag. [)]
+
+[(]		`{x style text}`	 [|] 	(depends on the style) [|]	Puts the text into a `<span class="style">` element. You
+									must define a `span.style` style somewhere in your
+									document. The style name may contain only alphanumeric characters and dashes.
+[)]
+[(]		`{c <b>code</b> &amp; text}`    [|]	{c <b>code</b> &amp; text} 
+						[|] Just wraps the contents in a `<code>` element. Doesn't modify the content.
+[)]
+[(]		`{ci italic code}`  [|]		{ci italic code} [|] [)]
+[(]		`{cb bold code}`  	[|]		{cb bold code} [|] [)]
+</table>
+
+The brace forms in {table emphasis} do not nest---{i `{b text}}` doesn't work.
+Also, the two forms of italic and boldface macros can coexist in a limited way.
+The following work:
+
+,	_*bold italic*_
+,	*_bold italic_*
+,	_italic *bold* more italic_
+,	*bold _italic_ more bold*
+,	{b bold _italic_}
+,	{i italic *bold*}
+
+and display like this:
+<block>
+_*bold italic*_
+*_bold italic_*
+_italic *bold* more italic_
+*bold _italic_ more bold*
+{b bold _italic_}
+{i italic *bold*}
+</block>
+
+{index code snippets (\`...\`)}
+{index \`....\` code snippets}
+=/ Code snippets (<code>\`code\`</code>) = snippet
+
+A code snippet is a bit of in-line code that appears in the middle of your text `like this`.
+Code snippets are input using backquotes.
+For example <nobr><code>\`if(a<b)\`</code></nobr> appears in the output as `if(a<b)` // </b></b>
+
+The HML processor puts the entire snippet on a single line (by replacing space characters with `&nbsp;` and bracking
+the snippet with `<nobr>...</nobr>`.
+
+All punctuation in the code snippet (everthing except an alphanumeric character space or tab)
+is mapped to an HTML entity. For example:
+
+| input 	| maps to
+|-2
+|	`<`		|	`&lt;`
+|	`>`		|	`&gt;`
+|	`&`		|	`&amp;`
+|	`{`		|	`&#123;`
+|	etc.	|
+
+This is a much more severe mapping than you'll //'
+find in _Markdown_, which maps only <, >, ', ", and &.
+The more comprehensive mapping is necessary because HML's powerful
+macro feature can use pretty much any character as a macro key (the text that's replaced by the macro processor).
+Code snippets are processed before
+macros are expanded, so this mapping-all-punctuation-to-entities rule
+effectively prevents macros from being expanded in code snippets.
+You'll find that all the predefined
+macros include some sort of punctuation in their key.
+Follow the same convention if you define your own macros.
+
+All tab characters in code snippets are expanded as four-space tabs, but the processor treats
+the opening backquote as the first character on the virtual "line".
+This behavior is relevant only if you're using code snippets to put leading whitespace on a line, and might
+use both tabs and spaces at the start of the line. For example:
+<pre style="border-left:1px solid black;padding-left:3pt;">
+<block>
+`	<- line starts with tab`
+`   <- line starts with three (!) spaces, but lines up with the tabbed line, above.`
+</block>
+</pre>
+prints as
+<block style="border-left:1px solid black;padding-left:3pt;">
+`	<- line starts with tab`
+`   <- line starts with three (!) spaces, but lines up with the tabbed line, above.`
+</block>
+
+{index code block, easy (`,`...)}
+{index `,`... (easy code block)}
+=/ Easy code blocks (`,`...) = easy-code
+
+The easiest way to put a short full-line code sample in your text is to prefix the code lines with a comma. For example:
+<block>
+`,	someCode();`
+`,	someMoreCode().`
+</block>
+is treated identically to
+<block>
+`<pre>`
+`someCode();`
+`someMoreCode();`
+`</pre>`
+</block>
+and displays as
+,	someCode();
+,	someMoreCode();
+
+(See {section advanced-code} for more on `<pre>`-block processing.)
+The processor coalesces adjacent lines into a single block.
+{index tab, in `,`... code block}
+If the comma is followed by a tab character, then the tab character is removed along with the comma.
+This rule applies only to the first tab character following the comma.
+This input
+<block>
+`,	<-- 1 tab`	
+`,		<-- 2 tabs`
+`,			<-- 3 tabs`
+</block>
+displays as
+,	<-- 1 tab
+,		<-- 2 tabs
+,			<-- 3 tabs
+
+Finally, any space to the left of the comma is discarded, which is occasionally useful when you
+want to indent your input. For example, this input:
+<block>
+`<blockquote>`
+`	Some text`
+`	<pre>`
+`		code();`
+`	</pre>`
+`	</blockquote>`
+</block>
+displays like this:
+<blockquote>
+	Some text
+	<pre>
+		code();
+	</pre>
+</blockquote>
+The `code()` is indented too much because standard HTML displays all the leading spaces on the indented input line.
+The following input, with an indented comma, solves the problem:
+<block>
+`<blockquote>`
+`	Some text`
+`	,	code();`
+`	More text`
+`</blockquote>`
+</block>
+It displays as
+<blockquote>
+	Some text
+	,	code();
+	More text.
+</blockquote>
+without the extra space to the left of `code()`.
+
+HML provides more sophisticated in code-handling mechanisms (see {section advanced-code}).
+In fact, the easy-code-block mechanism we just looked at is just an alias for the more elaborate `<pre>`
+block described in {section advanced-code}.
+
+=/ Headings (MediaWiki-Style) == mwheadings
+
+The easiest ways to put headings into your document is to use equal signs:
+
+{index `=`, heading}
+{index heading, `=`, `=/`, etc.}
+|= {i text}	| maps to |`<h0>`{i text}`</h0>`| Works just like an HTML `<h1>`. (No section numbering)
+|=/ {i text}	| maps to |`<h1>`{i text}`</h1>`| <div style="width: 3in;">Headings at this level and all inner levels have section numbers
+							added automatically (see {section H})).
+							Headings in the current document were created using `=/` at the topmost level.
+							</div>
+|== {i text}	| maps to |`<h2>`{i text}`</h2>`| (==/ works too, but / is unnecessary).
+|=== {i text}	| maps to |`<h3>`{i text}`</h3>`| (===/ works too, but / is unnecessary).
+|==== {i text}	| maps to |`<h4>`{i text}`</h4>`| (====/ works too, but / is unnecessary).
+|===== {i text}	| maps to |`<h5>`{i text}`</h5>`| (=====/ works too, but / is unnecessary).
+|====== {i text}| maps to |`<h6>`{i text}`</h6>`| (======/ works too, but / is unnecessary).
+
+The default (no slash) makes HTML-style titles, exactly like MediaWiki.
+
+The slash form enables section numbering---for not only that level,
+but also for all nested levels. All the outermost headings in the current document were specified with the
+slash form. The HML processor automatically assigns the numbers.
+
+HML handles heading numbering and renumbering.
+If you change the heading structure---add or remove one, for example,
+or move the section---the `{section mwheadings}` reference doesn't have to change.
+HML automatically displays the correct section number.
+I discuss symbolic section references like `{section mwheadings}`
+further in {section sectionRef}.
+
+You can use a slash for inner heading levels (e.g.,`==/ title`), but it's optional.
+
+Close the heading if you like
+(e.g.,`== heading ==`), but the trailing equal signs are not required.
+The leading = must be the first character on the line.
+
+{index heading, adding a label}
+If the heading uses trailing equal signs, you can specify a label like this:
+,	== My heading == label
+Text later in the document can refer to the heading symbolically by label.
+For example, the current section was introduced with the following markup:
+,	=/ Headings (MediaWiki-Style) == mwheadings
+The `mwheadings` doesn't appear in the output, but the HML processor remembers it.
+You can refer to that label anywhere in your document with `{section mwheadings}`,
+which displays as {section mwheadings}.
+The symbolic reference can even precede the labeled section in the input file.
+You can also use `{section-number `{i tag}`}` to get a link that shows the section number only.
+For example `{section-number mwheadings}` displays as
+{section-number mwheadings}.
+
+{index heading, access with arbitrary text}
+{index `[...]` link, to reference sections in document}
+To create a section link that displays arbitrary text (or if you're not using section numbering at all---no slash), use
+,	[#mwheadings MediaWiki-style headings section].
+which displays like this:
+<block>
+in the [#mwheadings MediaWiki-style headings section].
+</block>
+The leading `#` is required in this sort of link.
+
+As was the case with the "easy" code blocks, the heading mechanism discussed in the current section is
+a simplification of a more-elaborate system (described in {section H}) that handles the majority of
+situations.
+In fact, the heading mechanism described in the current section is implemented by a set of pre-defined macros
+(see {section macros}) that map to their more complicated variants.
+
+=/ `<block>...</block>` = block
+
+{index `<block>`}
+Works like `<blockquote>`
+(in fact, is mapped into a `<blockquote class="hmlBlock">`), but adds a `<br>` to the
+end of every line within the block.
+
+All attributes in a `<block>` element (including `class=` and `style=`) pass
+through to the generated `<blockquote>` tag.
+(Your `class=` preempts the default.)
+
+Block elements do not nest, so don't be tempted to do the following---it just won't work.
+<block>
+`<block>`
+`	//...`
+`	<block>`[########] {b <- Error! Nesting not permitted.}
+`		//...`
+`	</block>`
+`</block>`
+</block>
+
+Use HTML `<blockquote>` elements (and add the `<br>` elements manually) instead.
+
+=/ Lists = lists
+
+{index list, bullet}
+{index list, numbered}
+{index # (numbered list)}
+{index 0. (numbered list)}
+{index * (bullet list)}
+You may use standard `<ol>` and `<ul>` elements if you like, but for simple lists, a simpler mechanism is supported, as
+demonstrated with the following example:
+<pre>
+	Text above bullets
+	* first
+	  item
+	* second item
+	* third
+	  item
+	  is three lines long
+
+	Text below bullets
+
+	Text above numbers
+	0. first
+	0. second
+	   line
+	0. third
+
+	Text below numbers
+
+	Text above numbers
+	# first
+	# second
+	   line
+	# third
+
+	Text below numbers
+</pre>
+which prints like this:
+
+<blockquote>
+Text above bullets
+* first
+  item
+* second item
+* third
+  item
+  is three lines long
+
+Text below bullets
+
+Text above numbers
+0. first
+0. second
+	line
+0. third
+
+Text below numbers
+
+Text above numbers
+# first
+# second
+   line
+# third
+
+Text below numbers
+</blockquote>
+
+An asterisk introduces an item in a bullet list.
+The asterisk must be the first character on the line (no space or tab characters to the left).
+Within a list, indented lines are effectively merged with the previous line.
+That is, any indented lines that follow one that starts with a `*`,  `#`,
+or number are concatenated to the current list item.
+
+A blank line terminates the whole list,
+so blank lines can't separate list items. However, HML removes comment
+lines entirely before it processes 
+lists, so you can visually  separate list items like this:
+,	* first
+,		//
+,	* second
+,		//
+,	* third
+which displays as:
+
+* first
+	//
+* second
+	//
+* third
+
+Items in a numbered list are designated by a line starting with a
+period-terminated number (the _Markdown_ convention) or a hash mark (the
+_MediaWiki_ convention).
+Any number will do.
+The numbers you use to indicate "this is a numeric list item" are replaced by numbers in a proper sequence.
+The earlier example could have been written as follows and would have printed exactly the same output
+(output items are numbered 1, 2, and 3):
+
+,	9. first
+,	1. second line
+,	7. third
+
+{index list, definition}
+{: (definition list term)}
+{; (definition list definition)}
+The final sort of list is a definition list. Introduce the term you're defining
+with a semicolon and the definition with a colon. This input:
+
+<pre>
+; term 1
+: definition of term 1.
+; term 2
+: definition of term 2,
+  and more.
+: another definition of term 2.
+</pre>
+displays as:
+; term 1
+: definition of
+	term 1.
+; term 2
+: definition of term 2.
+  and more.
+: another definition of term 2.
+
+As in the case of other lists, indented lines effectively merge with the previous line.
+Use comments to put blank lines between list items, as described earlier.
+
+_MediaWiki_ users note that you can't mix list types, and
+you can't put a list within a list.
+Use the `<ol>` and `<ul>` elements to do that.
+The following won't work:
+<pre>
+# numbered-list element
+#* bullet list in numbered list
+</pre>
+
+{index list, containing `<pre>`}
+{`<pre>`, in list}
+{code block, in list}
+Finally, a code block (`<pre>`, `<listing>`, or `,`...) in a list can give you grief because HML breaks the input into
+a text block (containing the first part of the list) followed by a code block,
+followed by another text block (containing the second part of the list). For example:
+
+<block>
+`# item 1`
+`<pre>`
+`some code.`
+`</pre>`
+`# item 2`
+</block>
+ends up displaying like this:
+
+# item 1
+<pre>
+some code.
+</pre>
+# item 2
+
+which is probably not what you wanted.
+Solve the problem by using code snippets ({section snippet})
+in a `<blockquote>` or `<block>` ({section block}).
+
+<block>
+	`# item 1`
+	`<block>`
+	`\`some code.\` `
+	`</block>`
+	`# item 2`
+</block>
+
+which displays like this:
+
+# item 1
+<block>
+`some code.`
+</block>
+# item 2
+
+=/ Columnar output (simple tables) = tabbed
+
+{index columnar list}
+{index table}
+{index `|`, columnar output}
+{index `|-`{i N}, columnar output horizontal divider}
+{index horizontal line in table}
+{index table, horizontal line in}
+HML provides a mechanism, along the lines of the list mechanisms to format columnar data in tabular form.
+HML uses a `|` character for this purpose, so you must use `\|` if you want to put a literal `|` elsewhere in a text block.
+(Use the `[`[!]`(] ... [`[!]`|] ... [`[!]`)]` macros discussed at the end of {table macroTable} if you want to do fancy tables)
+
+Create a simple table like this:
+
+<block>
+`|	A		| B			| C`
+`|- 3`
+`|	first	| second	| third`
+`|	doo		| wha		| ditty`
+`|	hickory`
+`	| dickory`
+`	| dock`
+`	  and more dock.`
+</block>
+
+Which displays as follows
+
+|	A		| B			| C
+|- 3
+|	first	| second	| third
+|	doo		| wha		| ditty
+|	hickory
+	| dickory
+	| dock
+	  and more dock.
+
+A '|' at the beginning of a line introduces each row.
+Indented lines that follow the initial line continue that line,
+and appear on the same row in the output.
+
+HML replaces a row that starts with `|- `<code>{i N}</code> with a horizontal line.
+The number (3 in the earlier example)
+is the width of the line in columns, and it's required.
+
+Terminate the table with a  blank line.
+
+This mechanism is really for columnar data,
+but you can style the underlying table using CSS.
+A minor issue with the earlier examples might come into play if you do restyle, however.
+If the table cells have borders, you should put a terminating | at the end of every row:
+
+<pre>
+| a | b | c |
+| A |   | C |
+| x | y |   |
+</pre>
+
+The earlier examples left out that rightmost `|` which is perfectly okay unless you restyle to add
+borders. The issue is discussed further in {section stylingTables}.
+
+{index notes, (see end notes}}
+{index `<note>`}
+{index end notes}
+=/ End notes (`<note>`, `<endnotes>`)
+
+HML supports linked end notes. 
+The note is typically moved to [#notes the end of the document],
+and a reference is placed at the end of the sentence.
+<note>
+Here's the note.
+</note>
+The note at the end of the previous sentence was generated by the following markup:
+<block>
+{i ...notes.}`<note>Here's the note.</note>`
+</block>
+By default, the note pops up in a small box when the cursor hovers over the
+reference, but you can change that behavior if you like ({section endnoteLayoutAndBehavior}).
+The numbers are generated automatically, and increment with each use.
+<note>
+	Here's a second note, created using
+	<block>
+		{i ...use.}
+		`<note>`
+		`    Here's the second note, created using`
+		`    <block>`
+		[#######]...
+		`    </block>`
+		`</note>`
+	</block>
+	Note that, even though the `<note>` tag is on the next line from the annotated sentence, the annotation
+	itself is where it belongs, right next to the period. White space to the left of the `<note>` is effectively
+	ignored.
+</note>
+The `<note>` tag doesn't have to be bang up against the period. You can do this:
+<pre>
+some text.
+<note>
+	The note goes here.
+</note>
+</pre>
+
+You'll note (so to speak) that the note reference is a link
+to the actual end note, which is at the end of the document.
+You can't click on it because the popup obscures it, but if you remove the popup,
+clicking on the note mark gets you to the note.
+Once you get there, clicking on the reference next to the actual note gets you back to your original location.
+The note mark is underlined to highlight the fact that it's a link,
+but that underline doesn't appear in the printed version of the document.
+
+The only restriction with the note text is that it can't contain a code block. That is, you can't say:
+<pre>
+<note>
+	<pre>
+		someCode();
+	</pre>
+</note>
+</pre>
+or
+<pre>
+<note>
+,	someCode();
+</note>
+</pre>
+You can, however, use code snippets:
+<pre>
+<note>
+	<block>
+		`someCode()`
+	</block>
+</note>
+</pre>
+
+{index end notes, non-numeric}
+You don't have to use numeric notes if you don't want to.<note mark="[dagger]">This is a note with a non-numeric callout.</note>
+I created the note at the end of the previous sentence with the following markup:
+<block>
+{i ...want to.}`<note mark="[dagger]">This is a note with a non-numeric callout.</note>`
+</block>
+HML macros can be used for callouts, as I've done here with `[dagger]`.
+The downside of that flexibility is that you may want to use \* for a note, but
+the \* introduces boldface in HML, so you'll have to escape the \* in this case:
+<pre>
+<note mark="\*">
+</pre>
+If you mix numeric and non-numeric notes in the same document,
+the numbering remains sequential.
+That is, the intervening non-numeric note doesn't disturb the numbering.
+
+You can restart the numbering to an arbitrary number by using a `mark=` attribute in the
+`<note...>` element.
+I've put the following at the end of the current sentence to restart numbering at 10:
+<note mark="10" label="note10">
+	This is note number 10, created using
+	<block>
+	`<note mark="10" label="note10">...</note>`
+	</block>
+	The `mark=` gives the note the number 10 (the next note is 11), and the
+	`label=` lets us reference the note by name (e.g.,`{note note10}`).
+</note>
+<block>
+{i ...at 10:}`<note` ... `mark="10">This is note number 10.</note>`
+</block>
+Thereafter, numbering continues from whatever number you assign manually, so the next note is 11.
+
+{index end notes, referencing by label}
+If you need to reference a note in more than one place, you can use
+
+<block>
+`<note label="myLabel"` ... `>`
+</block>
+to give the note a label, and then link to the note text using one of:
+
+<block>
+`{note myLabel}`
+`{note-number myLabel}`
+</block>
+For example, the full annotation for note 10, above, was actually:
+
+<block>
+`<note `{cb label="note10"}` mark="10">`
+</block>
+and
+<block>
+`{note note10}`
+`{note-number note10}`
+</block>
+displays as
+<block>
+ {note note10}
+ {note-number note10}
+</block>
+
+One final minor, but useful feature. The `prefix="`{i text}`"` and `suffix="`{i text}`"`
+specify a prefix and suffix that surround the note reference.
+For example, I used a `suffix=", "` to put the comma between the two callouts at the end of the
+current sentence.
+<note suffix=", ">Here's the first note in a two-note sequence. This one is
+specified with `<note suffix=", ">`. note the space following the comma.
+</note>
+<note>Here's the second note in the two-note sequence. There's no suffix, here.</note>
+The prefix and suffix are visible only in the note reference; not in the endnotes section.
+
+Surround the note with brackets<note prefix="\[" suffix="\]">Like this.</note>
+with `<note prefix="\[" suffix="\]">`.
+The backslash takes away the special meaning of the bracket, which usually indicates a hyperlink.
+
+If you want to use brackets throughout the document, the easiest solution is to create a macro (see {section userMacro}):
+<pre>
+<macro>
+'<n>'<note prefix="\\[" suffix="\\]">'
+'</n>'</note>'
+</macro>
+
+text<n>The reference to this note has brackets.</n>
+</pre>
+displays as
+<macro>
+'<n>'<note prefix="\\[" suffix="\\]">'
+'</n>'</note>'
+</macro>
+<block>
+text<n>The reference to this note has brackets.</n>
+</block>
+Use double backslashes in the macro definition to get the macro to expand to a single backslash.
+
+== Displaying the end notes ==
+
+{index `<endnotes>`}
+{index end notes, displaying}
+The note's text is {u _not_} displayed by default. 
+HML wants to make no assumptions about where you actually want the notes,
+and it can't know how you want to set off the notes from the rest of the document.
+You need to put an `<endnotes>` element at the end of your document
+(or wherever else you want the notes to appear). For example:
+<pre>
+<endnotes>
+= Notes = notes
+</endnotes>
+</pre>
+I've put exactly that markup at the [#notes end of the current document].
+
+The contents of the `<endnotes>` element (the heading in the earlier example)
+are put into the document immediately above the note text.
+I've used a normal heading (that's the `= Notes`) in the current document
+so that the heading appear in the table of contents,
+but it won't be numbered like a normal heading because I've used the `=` notation, without the
+slash.
+
+Any and all HML markup can be used within the `<endnotes>` section in this way.
+For example, you could use something like a horizontal rule instead of a formal heading to set off the notes like this:
+<pre>
+<endnotes>
+---
+</endnotes>
+</pre>
+interpreted as an HTML hyperlink indicator.
+
+=/ `<toc>Table of Contents</toc>`
+The `<toc>` element is replaced by a table of contents that displays all the section headings
+as hot links to the sections.
+The text between the `<toc>` and `</toc>` becomes the table's title.
+The table of contents at the top of the current document was created using:
+<pre>
+<toc>Contents</toc>
+</pre>
+
+{index heading, exclude from table of contents}
+{index toc, argument to `H`_N_}
+If you don't want a particular heading to appear in the table of contents,
+put a `toc="no"` attribute in the heading tag, like this:
+,	<h3 toc="no">
+(you can also use `<h`{i N}` toc="false">`). // </h3>
+There's no equivalent mechanism for the `=Title=` form of heading definition---you have to
+use an `<h`{i N}`>` element to turn off table-of-contents inclusion.
+
+You can, however, remove entire contents levels (e.g.,all sections at level 3 or higher) from
+the table by modifying the CSS styling used in the table.
+The details are discussed in {section tocStyling}.
+
+{index index, macro-style}
+=/ Creating an index (`{index` {i topic}`}`, `<index>`, `<index-entry>`)
+
+{index index, macro-style}
+Use the `{index `{i topic}`}` macro
+to include the current location in an accumulated index.
+The macro effectively disappears from the visible text,
+though an invisible anchor is inserted in its place. Clicking on the associated index entry
+returns the browser to that anchor.
+The topics can have multiple words in it (e.g. `{index index creation`)
+
+As was the case with end notes, you need to add an element at the place where you want the
+index to appear in your document:
+<block>
+`<index>`{i Title}`</index>`
+</block>
+The HML processor uses the element contents as the title.
+for example, The index [#index at the end of this document]
+was created using:
+,	<index>
+,	= Index = index
+,	</index>
+The index is sorted by topic (punctuation first, then numbers, then alphabetic),
+and the sorting is not case sensitive. 
+If you're anything like me, you'll accidentally use a singular form of the topic sometimes and
+a plural form at others. That's really an error, but it's a hard-to-find one, so the indexing system deals with
+it for you. When the HML processors compares topics for purposes of sorting and aggregation, it ignores any trailing "es" or "s."
+(The topic that appears in the index is whichever version you used first).
+
+Because of the way that most browsers scroll, it's best to put the
+`{index x}` reference just above the text you intend to index. That way
+the indexed text will be at the top of the browser window when you
+click on the reference link.
+
+<p>
+{index ZZ}
+{index ZZ, subtopic}
+{index ZZ}
+{index ZZs, plural version}
+{index index, subtopic in}
+{index index, visible text of reference}
+You can specify a subtopic with a comma in the macro, for example, the current paragraph
+was put into the index using
+,	{index index, subtopic}
+Hyperlinks associated index entries without subtopics
+use numbers as their visible text. If you specify a subtopic, however, that subtopic is used as the visible text.
+
+Here's an easy-to-find example (The ZZ topic sorts to the very end of the [#index Index]).
+The current paragraph is prefixed with
+,	{index ZZ}
+,	{index ZZ, subtopic}
+,	{index ZZ}
+,	{index ZZs, plural version}
+The resulting index entry looks like this:
+<block>
+*ZZ* {u 1}, {u subtopic}, {u 3}
+</block>
+(The three items to the right of the ZZ are hyperlinks to the current paragraph.)
+<p>
+{index index, HTML-style}
+{index `<index-entry>`}
+The `{index topic, optional-subtopic}` macro actually evaluates to the following element:
+,	<index-entry topic="theTopic">optional-subtopic</index-entry>
+You can use the macro form and the HTML-element form interchangeably.
+
+Finally, remember that implicit paragraphs implied by a blank line are inserted only if the first character following the
+blank line alphanumeric. Consequently
+<pre>
+...end of previous paragraph.
+
+{index myTopoc}
+A new paragraph.
+</pre>
+does not start a new paragraph (the `{` in the index directive is not alphanumeric). //}
+You'll need to do one of the following in this situation:
+<pre>
+...end of previous paragraph.
+
+A {index myTopoc}
+new paragraph.
+</pre>
+or
+<pre>
+...end of previous paragraph.
+
+<p>
+{index myTopoc}
+A new paragraph.
+</pre>
+
+<pending>
+<p>
+Export the index to an external file by specifying a `dest=` attribute in the HTML tag. For example:
+<pre>
+<index dest="/path/to/output/file.html">Optional Title</index>
+</pre>
+writes an index file to {i /path/to/output/file.html}.
+
+The generated file holds HTML markup that exactly mirrors the HTML that's output to the main body of the document
+(see {section index-layout}).
+You'll have to do a little postprocessing
+to build an aggregate external index for a multi-part document. In particular, the location anchors are all relative URL's,
+so you'll need to add a file indicator to their left.
+</pending>
+
+{index file, importing}
+{index listing, importing}
+{index code, importing}
+{index importing, code}
+{index importing, listings}
+
+=/ Pulling in external files: `<include>` and `<import>` = import
+
+Both `include` and `import` directives are replaced by the contents of a file, a path to which is specified in the tag.
+The basic form is:
+|	`<`[!]`include href="http://www.holub.com/sources/someFile.java">`
+|	`<`[!]`include src="/Users/allen/projects/sources/someFile.java">`	| (or `file="`...`"`)
+|	`<`[!]`import  href="http://www.holub.com/sources/someFile.java">`
+|	`<`[!]`import  src="~/projects/sources/someFile.java">` 			| (or `file="`...`"`)
+</block>
+
+Include code. Import everything else.
+
+The `href=` attribute requres a URL argument.
+The `src=` (or `file=`[---]you can use them interchangeably) expects a path in the local file system, not a URL.
+You can, however, reference a local file using the URL form like this: `href="file://..."`
+The `~` represents your "home directory"---the directory or folder that's active when you log in.
+The `~` isn't legal in a standard URL, but HML will take care of the mapping for you if you use it in a URL.
+
+The contents of imported files are just inserted into your document verbatim. That is, the `<import>` directive is effectively
+replace by the contents of the file.
+Use `<import>` to manage a book (a single HML for the book might pull in HML files representing the individual chapters),
+manage macros (an imported file could contain a single `<macro>` element that defined many locally-used macros),
+or define styling (an imported file could contain a `<head>` element that defines local CSS styles). // </head>
+Imports nest---you may import a file that, itself, imports a file.
+
+Included files are treated as listings, and unlike imported files, which are imported verbatim, listings are heavily processed.
+The [#listings listings at the end of this document] were imported with
+,	<include src="~/config/hml.head" title="">
+,	<include src="~/config/hml.tail" title="">
+,	<include src="~/config/hml.macros" title="">
+The line numbers, title, and so forth were provided by HML.
+
+If you supply a listing title (even an empty one, as I've done here), you can reference the listing symbolically.
+Given the earlier `<include src="~/config/hml.macros" title="">`:
+| `{listing hml.macros}` 		| displays as {listing hml.macros}
+| `{listing-number hml.macros}` | displays as {listing-number hml.macros}
+and clicking the link gets you to the reference.
+You do need a `title=` attribute, even an empty one, for that to work.
+If the attribute is empty (as is the case, here), HML uses the file name as the title, otherwise it uses whatever text you supply.
+
+If you leave out the `title=` there won't be a title, and symbolic listings won't be possible, but a title-less `<include>` is handy for inserting
+a small unnamed block of code directly into your document.
+
+Finally, you may {i tag} lines in the listing. (Tagging is actually a complicated subject, and is discussed further in {section lineReferences}.)
+Mark a line in a listing by putting `{= `{i tagName}`}` into a comment. The _tagName_ is an arbitray name that you make up.
+That tag is not displayed in the document, but the line is nonetheless marked with an invisible anchor.  Here's an example:
+This input:
+
+<block>
+	`<listing>`
+	`public void f()	`<b>`// {= f-def}`</b>
+	`{`
+	`}`
+	`</listing>`
+</block>
+
+displays as
+<listing>
+public void f()	// {= f-def}
+{
+}
+</listing>
+and elsewhere in your document,
+you can reference the line with any of the following:
+|	`{line f-def}`						| displays as |	{line f-def}
+|	`{# f-def}`							| displays as |	{# f-def}
+|   `[#f-def the \`f()\` declaration]`	| displays as |	[#f-def the `f()` declaration]
+
+The `<include>` directive is actually more complicated than
+you'd gather from the current section.
+For example, if you're working on a java file, most declarations are
+tagged for you automatically.
+{section advanced-include} discusses `<include>` in greater depth, and
+{section lineReferences} discusses automatic tagging.
+
+{index macros}
+=/ Macro substitution
+
+Macros are input that's replaced by something else (the replacement process
+is called a "macro expansion").
+The HML processor applies macros to the text portion of your document---they're never expanded inside any sort of code block
+(inside a `<listing>` or `<pre>` element or in a \`...\`-delimited code snippet).
+
+{index macros, types}
+== Macro types ==
+
+Two sorts of macros are supported:
+
+*	HML out of the box contains many _pre-defined macros_, most of which are listed in {table macroTable}.
+	(Things like the list mechanism described, [#lists earlier], are actually
+	macros, but aren't in the table.)
+	<p>
+	The HML processor reads the macro definitions for the pre-defined macros from a
+	configuration file (_hml.macros_, {listing hml.macros}) when the program starts up.
+	The default version of this file is packed inside the {i hml.jar} file that holds the
+	program, but you can provide your own version. The process is discussed in [#config Appendix A].
+	Your version preempts the default one.
+*	You can also specify _user-defined macros_ right in your document by using a
+	`<`[!]`macro>` element ({section userMacro}). 
+	To use your custom macros in more than one document,
+	put the definitions in a separate file and `<import>` it ({section import})
+	into your document.
+	User-defined macros are processed before all other macro types, so you can
+	use them both to introduce new macros and also to redefine existing macros.
+
+Many of the features of HML are actually macros.
+The emphasis notation described in {section boldfaceEtc} 
+is implemented using predefined macros,
+as are the heading, link, and list mechanisms.
+Similarly, the blank-line-introduces-a-paragraph mechanism 
+is actually a predefined macro,
+as are, the `<h`{i N}`>` shorthands
+(`=`, `==`, etc.) and the numbered-list, definition-list,
+and bullet-list, and table mechanisms.
+Bracket-style hyperlinks ({section hyperlink}) are also macros.
+I haven't listed all these in {table macroTable},
+but because they are (predefined) macros, you can redefine them if you want to.
+
+Though it's tempting to look at the code-snippet mechanism (\`{c code}\`) as a macro,
+it's not---it's an integral part of the processor. Consequently,
+you can't redefine \` as if it introduced a macro.
+HML processes code snippets before macros, so you can't use a macro in a code snippet,
+and macros can't expand to code snippets.
+
+
+== Predefined macros expanded in normal text== macros
+
+{index macros, predefined}
+{table macroTable} lists the predefined macros that aren't otherwise described in this manual.
+The actual macro definitions are in {listing hml.macros}, and
+{section macroFileFormat} talks about how to interpret that file.
+
+{b These macros are not expanded in code.}
+They effect only the text part of your document.
+<br>
+<br>
+
+<head>
+	<style> 
+	.macrotable .hmlBox { margin: 3pt 0 3pt 0; border-style: solid; border-width:1px; padding: 3pt 3pt 3pt 3pt; }
+	</style>
+</head>
+<table-title label="macroTable">Text Macros Not Discussed Elsewhere</table-title>
+<div class="macrotable">
+<table border="1" cellspacing="0" cellpadding="4">
+<tr> <th>Input</th> <th>Displays as</th> <th>Comment</th> </tr>
+[(] 
+	`\{`	<br>
+	`\}`	<br>		
+	`\[`	<br>
+	`\]`	<br>		
+	<code>\\\\</code>	<br>
+	`\*`	<br>
+	`\^`	<br>
+	`\_`	<br>
+	{c \\}{c \`}	<br>
+[|]
+	\{	<br>
+	\}	<br>		
+	\[	<br>
+	\]	<br>		
+	\\	<br>
+	\*	<br>
+	\^	<br>
+	\_	<br>
+	\`	<br>
+[|]	Many
+	{index `\{`}
+	{index `\}`}
+	{index `\[`}
+	{index `\]`}
+	{index <code>\\\\</code>}
+	{index `\*`}
+	{index `\^`}
+	{index {c \\}{c \`}}
+	{index `\_`}
+		macros depend on one or more of these special characters. "Escape" the special character with a backslash to prevent
+		a it from being handled specially. For example,
+		`{i text}` prints as {i text}, but `\{i text}` prints as \{i text}.
+		You don't have to escape _every_ instance of many of these characters, only those
+		situations that would otherwise confuse the macro processor. For example,
+		a naked { is usually harmless unless the word that immediately follows it
+		could be a macro name. For example {fred} doesn't mean anything to HML, so no backslash is required.
+		You'll always have to escape the \`, however, since it
+		introduces code snippets (discussed below) unless escaped.
+
+[)]
+
+[(] `---` 				[|] <hr style="width:1in;">	[|] {index `----`} Lines containing nothing but a sequence of one or more dashes
+														are replaced by a horizontal rule (`<hr class="hmlRule">`);
+
+[)]
+[(]	->`[!]`<-			[|]		->[!]<-			[|] {index `[!]`} {index zero-width space} Zero-width space. Expanded after all other special
+													characters are processed. Handy for doing things like preventing
+													other macros from expanding. For example `{[!]link x}` is not treated as a
+														`{link x}` macro. Instead, the text {[!]link x} is printed.
+[)]
+[(]	->`[##]`<-				[|]		->[##]<-	[|] {index `[##]`} Replaced by two more non-breaking spaces than the number of hash marks.
+													You may specify at most eight hash marks.
+													The current example is four spaces wide.
+													(The two extras make the width in the input the same as the width in the output, which
+													is convenient if you're trying to get text to line up in neat columns.)
+													`[]` evaluates to two non-breaking spaces. You can achieve a similar effect
+													with a code snippet made up only of spaces (e.g.,{c &lsquo;   &lsquo;}),
+													though that approach always uses space characters in the code, not the
+													document, font.
+[)]
+[(]		`&`					[|]		&			[|] {index `&`} Expands to `&amp;` in most contexts. However, an `&` that's part of an HTML {i entity} (e.g.
+													`&nbsp;` or `&#123;`) is passed to the output without modification.
+												[)]
+[(]		`<<`				[|]		<<			[|] {index `<<`} Open guillemet. {index guillemet} [)]
+[(]		`>>`				[|]		>>			[|] Close guillemet. [)]
+[(]		`<`					[|]		<			[|] {index `<`} Expands to `&lt;` unless it's part of an HTML or XML element.
+												To be recougnized as an HTML element, the input must follow the following rules:
+												<ul>
+												<li>The `<` must be followed by an alphabetic character with no intervening spaces.
+												<li>The `>` be preceded by either an alphabetic character or a double-quote mark.
+												<li>In general, the element must look like an HTML element (e.g.,`<a href="http://abc">`
+													or `<b>`).
+													Something like `<abc def>` is not a legal HTML element, so the angle brackets _are_
+													translated.
+												<li>Prefix the `<` with a backslash to get normal angle-bracket translation.
+													For example `\<br>` displays in the output as as \<br>. The `\<` is handled as if
+													it weren't introducing an HTML element.
+													Similarly, HTML elements in code snippets (e.g.,<nobr>{c ``}`<br>`{c ``}</nobr>)
+													always print literally (`<br>`).
+												</ul>
+												[)]
+
+
+[(]		`>`					[|]		>			[|] {index `>`} Expands to `&gt;` unless it terminates an HTML/XML element.[)]
+
+[(]		`word---word`		[|]		word---word	[|] An {index `---`}{index em-dash} em-dash. The `---` must be bracketed by alphabetic characters (no spaces). [)]
+[(]		`[---]`				[|]		[---]		[|] An em-dash in other contexts. [)]
+[(]		`0123--0123`		[|]		0123--0123	[|] An {index `--`}{index en-dash} en-dash. The `--` must be bracketed by digits (no spaces).[)]
+[(]		`[--]`				[|]		[--]		[|] An en-dash in other contexts. [)]
+[(]		`...`				[|]		...			[|] {index `...`} {index elipsis} An `&hellip;` entity. This entity was introduced in HTML 4.0, so you may want
+													to either modify {i html.head} or provide a user macro to map it to something
+													else for older browsers (see {section userMacro}):
+<block>
+`<macro>`
+`|\.\.\.|...| ## override default mapping to &hellip;`
+`</macro>`
+</block>
+												[)]
+[(]		`[tm]`				[|]		[tm]		[|] {index `[tm]`} [)]
+[(]		`(c)` `(C)`			[|]		(c) (C)		[|] {index `(c)`} If you really need to display a ([!]c), use a zero-width space: `([!]c)` [)]
+[(]		`(r)` `(R)`			[|]		(r)	(R)		[|] {index `(r)`} If you really need to display a ([!]r), use a zero-width space: `([!]r)` [)]
+
+[(]		`+-  +/-  -+`		[|]		+- +/- -+	[|] {index `+-`} [)]
+
+[(]		`[*]` 				[|]	    [*]			[|] {index `[*]`} {index times sign} [)]
+[(]		`[/]` 				[|]		[/]			[|] {index `[/]`} {index divide sign} [)]
+[(]		`[+]` 				[|]		[+]			[|] {index `[+]`} {index plus sign} [)]
+[(]		`[-]` 				[|]		[-]			[|] {index `[-]`} {index minu sign} A minus sign, as compared to a dash (-). [)]
+[(]		`[!=]` `!=` 		[|]		[!=] !=		[|] The brackets are optional. {index `!=` macro} [)]
+[(]		`<=` 				[|]		<=			[|] {index `<=` macro} [)]
+[(]		`>=` 				[|]		>=			[|] {index `>=` macro} [[)]
+
+[(]		`1/4`				[|]		1/4			[|] {index `1/4` macro} Only when no spaces surround the /. If spaces are present (including a zero-width space: `1[!]/4`), you'll get 1[!]/4 [)]
+[(]		`1/2`				[|]		1/2			[|] {index `1/2` macro} Only when no spaces surround the /. If spaces are present, you'll get 1[!]/2 [)]
+[(]		`3/4`				[|]		3/4			[|] {index `3/4` macro} Only when no spaces surround the /. If spaces are present, you'll get 3[!]/4 [)]
+
+[(]		`^1`				[|]		^1		[|] {index `^` macros} {index superscript} Evaluates to the `&sup1;` entity. [)]
+[(]		`^2`				[|]		^2		[|] Evaluates to the `&sup2;` entity. [)]
+[(]		`^3`				[|]		^3		[|] Evaluates to the `&sup3;` entity. [)]
+[(]		`^o`				[|]		^o		[|] Lower-case o. Evaluates to a `&deg;` entity.[)]
+[(]		`X^super`			[|]		X^super		[|] Superscript a single "word" (all alphanumeric characters that immediately follow the underscore).
+													A non-space character must both precede and follow the ^.
+													The `^1`, `^2`, `^3`, and `^o` macros take precedence over the current one.
+												[)]
+[(]		`X_`<span style="font-size:4pt;">&nbsp;</span>`_sub`			[|]		X__sub		[|] {index `_` macros} {index subscript} Subscript a single "word." Note that you need two underscores.
+												[)]
+[(]		`X{^ many words}`	[|]	X{^ many words}	[|] Use this form to superscript multiple words or strings that contain non-alphanumeric characters.
+												[)]
+[(]		`X{_ many words}`	[|]	X{_ many words} [|] Use this form to subscript multiple words or strings
+that contain non-alphanumeric characters. There's only one underscore in this form.
+												[)]
+
+[(]		`<-`				[|]		<-			[|] [)]
+[(]		`->`				[|]		->			[|] [)]
+[(]		`[SS]`				[|]		[SS]		[|] [)]
+[(]		`[dagger]`			[|]		[dagger]	[|] [)]
+[(]		`[Dagger]`			[|]		[Dagger]	[|] [)]
+
+[(]		`[Delta]`			[|]		[Delta]		[|] [)]
+
+[(]		<code>\[a\`\`\]</code>	[|]	[a``]		[|]	{index accents} {index `[a']` etc.} Two \` characters in sequence are required.[)]
+[(]		`[a']`					[|]	[a']		[|]	[)
+[(]		`[a^]`					[|]	[a^]		[|]	[)]
+[(]		<code>\[e\`\`\]</code>	[|]	[e``]		[|]	Two \` characters in sequence are required.[)]
+[(]		`[e']`					[|]	[e']		[|]	[)]
+[(]		`[e^]`					[|]	[e^]		[|]	[)]
+[(]		<code>\[i\`\`\]</code>	[|]	[i``]		[|]	Two \` characters in sequence are required.[)]
+[(]		`[i']`					[|]	[i']		[|]	[)]
+[(]		`[i^]`					[|]	[i^]		[|]	[)]
+[(]		<code>\[o\`\`\]</code>	[|]	[o``]		[|]	Two \` characters in sequence are required.[)]
+[(]		`[o']`					[|]	[o']		[|]	[)]
+[(]		`[o^]`					[|]	[o^]		[|]	[)]
+[(]		<code>\[u\`\`\]</code>	[|]	[u``]		[|]	Two \` characters in sequence are required.[)]
+[(]		`[u']`					[|]	[u']		[|]	[)]
+[(]		`[u^]`					[|]	[u^]		[|]	[)]
+
+[(]		<code>\[A\`\`\]</code>	[|]	[A``]		[|]	Two \` characters in sequence are required.[)]
+[(]		`[A']`					[|]	[A']		[|]	[)]
+[(]		`[A^]`					[|]	[A^]		[|]	[)]
+[(]		<code>\[E\`\`\]</code>	[|]	[E``]		[|]	Two \` characters in sequence are required.[)]
+[(]		`[E']`					[|]	[E']		[|]	[)]
+[(]		`[E^]`					[|]	[E^]		[|]	[)]
+[(]		<code>\[I\`\`\]</code>	[|]	[I``]		[|]	Two \` characters in sequence are required.[)]
+[(]		`[I']`					[|]	[I']		[|]	[)]
+[(]		`[I^]`					[|]	[I^]		[|]	[)]
+[(]		<code>\[O\`\`\]</code>	[|]	[O``]		[|]	Two \` characters in sequence are required.[)]
+[(]		`[O']`					[|]	[O']		[|]	[)]
+[(]		`[O^]`					[|]	[O^]		[|]	[)]
+[(]		<code>\[U\`\`\]</code>	[|]	[U``]		[|]	Two \` characters in sequence are required.[)]
+[(]		`[U']`					[|]	[U']		[|]	[)]
+[(]		`[U^]`					[|]	[U^]		[|]	[)]
+
+[(] <code>\`\`</code>
+[|] ``  
+[|] {index quotation marks} (Two left-quote characters in the input.) A left single quote. 
+	<p>
+	An empty code snippet is treated as a left single quote.
+	If you really want two left-single-quote
+	characters next to each other, use HTML entities (`&lsquo;&lsquo;`) or </code>\\\`\\\`</code>
+[)]
+
+[(] <code>'</code><code>'</code>
+[|] ''
+[|] (Two right-quote characters in the input.) A right single quote, not an apostrophe ('). They're different in some fonts.
+[)]
+
+[(] <code>\`</code><code>\`</code><code>]\`</code>
+[|] ```
+[|] (Three left-quote characters in the input.) A left double quote, not a quotation mark (&quot;). They're different in some fonts. Note that you need three of them in the input.
+[)]
+
+[(] <code>'[!]'[!]'</code>
+[|] '''
+[|] (Three right-quote characters in the input.) A right double quote, not a quotation mark (&quot;). They're different in some fonts. Note that you need three of them in the input.
+[)]
+
+[(]		`[timestamp]`	[|]		[timestamp]	[|] {index `[timestamp]`} Current date and time in standard form. [)]
+[(]		`[month]`		[|]		[month]		[|] {index `[month]`} Current Month. January = 1.[)]
+[(]		`[day]`			[|]		[day]		[|] {index `[day]`} Current day of the month. [)]
+[(]		`[year]`		[|]		[year]		[|] {index `[year]`} Current Year. [)]
+[(]		`[hr]`			[|]		[hr]		[|] {index `[hr]`} Current hour (24-hour time). [)]
+[(]		`[min]`			[|]		[min]		[|] {index `[min]`} Current minute [)]
+[(]		`[sec]`			[|]		[sec]		[|] {index `[sec]`} Current second [)]
+[(]		`[Month]`		[|]		[Month]		[|] {index `[Month]`} Current month in English [)]
+[(]		`[Day]`			[|]		[Day]		[|] {index `[Day]`} Current day of the week in English [)]
+[(]	`{amazon 159059388X Holub on Patterns}`
+	[|]	{amazon 159059388X Holub on Patterns}
+	[|]	{index `{amazon...}`} {index amazon link} Link to Amazon for book with indicated ISBN and title. By default,
+		if whoever clicks on the link actually buys the book, a percentage of the sale price
+		goes towards maintaining HML. You can, of course, change the macro to remove the
+		vendor ID (or reference your own vendor ID), either by modifying {i hml.macros}
+		or by defining a user macro that overrides the default. 
+[)]
+
+[(]	`<box> Boxed Paragraph </box>`
+[|]	<box> Boxed paragraph </box>	
+[|] {index boxed paragraph} {index `<box>`} Expands to `<div class="hmlBox">...</div>` The default {i box} class is defined in the {i $CONFIG/hml.head} file.
+[)]
+
+[(]
+	`<table border="1" cellspacing="0"`
+	`                  cellpadding="1">`<br>
+	`[( style="color:red;"] A`<br>
+	`[|] C`<br>
+	`[|] E`<br>
+	`[| style="background-color:yellow"] G`<br>
+	`[)]`<br>
+	`[(] B [|]  D [|] F [|]  [)]`<br>
+	`[(]   [|]    [|]   [|]  [)]`<br>
+	`</table>`<br>
+[|]
+	<table border="1" cellspacing="0" cellpadding="1">
+	[( style="color:red;"] A
+	[|] C
+	[|] E
+	[| style="background-color:yellow"] G
+	[)]
+	[(] B [|]  D [|] F	[|]		[)]
+	[(]   [|] 	 [|] 	[|]		[)]
+	</table>
+[|]
+	{index table macros}
+	{index `[(]`}
+	{index `[)]`}
+	{index `[|]`}
+	The columnar-output mechanism ({section tabbed}) is easy to use, but not particularly flexible.
+	These macros are more annoying to type, but are more flexible.
+	The macros inserts `<tr>` and `<td valign="top">` elements as appropriate.
+	An `&nbsp;` is inserted into all empty cells.
+
+	Unlike the standard table mechanism, these macros don't care about
+	indenting, and they let you style individual cells. Text following
+	the '(' in `[(]`  and the `|` in `[|]` is
+	inserted into the generated `<td>`
+	(as with the `style=`... at left).
+	<p>
+	Theses macros don't work well with the built-in columnar-data mechanism.
+	Don't use something like `[|]` instead of a `|` in a normal table, or vise versa.
+	A hybrid approach may work now in some situations, but may not work a future HML version.
+	Don't do it.
+[)] // )
+</table>
+</div>
+
+{index macros, nesting}
+== Macro nesting ==
+
+There are two main categories of macros:
+those that use braces (e.g.,`{i` text`}`) and everything else.
+Brace-delimited macros all take arguments, and none of the others do.
+(The only exceptions are the link macros (`[http://www.holub.com]`)
+which use brackets instead of braces to be compatible with _MediaWiki_.
+
+In general, you can't nest macros that contain braces, but you can use any of the other macros in a brace-delimited macro without difficulty..
+Brace and non-brace forms work well, however: `{i r[e']sum[e']}` works fine (and prints as {i r[e']sum[e']}).
+
+<h0 class="part">Part II: Advanced Features</h0>
+
+{index heading, HTML-style}
+<h1 chapter="20" label="H">Headings (HTML-style)</h1>
+
+{index heading, labeling}
+The `=` notation for headings described in {section mwheadings} is implemented using macros that map to `<h`{i N}`>` elements.
+In particular, 
+,	== MediaWiki-style headings == mwheadings
+maps to
+,	<h2 label="mwheadings"> Headings (MediaWiki-Style)</h2>
+Note the `label=` attribute, which holds the heading label.
+
+HML modifies the behavior of the standard elements `<h`{i N}`>` element to add numbering,
+and the HTML form is a bit more powerful than the `=` form. The `<h`{i N}`>` form lets you assign a specific section number, for example.
+
+Note that HML recognizes only lower-case
+versions of the `<h`_N_`>` element tags. For example `<h1>` is handled // </h1>
+specially by HML, but `<H1>` is not. // </H1>
+Use the upper-case form if you want the tag to pass through HML unmolested.
+(The same applies to the other standard HTML elements whose behavior is modified by HTML: the `<pre>` element.
+Use `<PRE>` to suppress any special HML processing.
+
+Looking at HML-specific behavior, the input:
+<pre>
+<h1 chapter="10">H1-Title</h1>	// or:   =/ H1-Title  <- Slash required for numbering
+<h2>H2-Title</h2>				// or:   == H2-Title
+<h3>H3-Title</h3>				// or:  === H2-Title
+<h4>H4-Title</h4>				// or: ==== H2-Title
+</pre>
+renders as
+<blockquote>
+<h1 chapter="10" toc="no">H1-Title</h1>
+<h2 toc="no">H2-Title</h2>
+<h3 toc="no">H3-Title</h3>
+<h4 toc="no">H4-Title</h4>
+</blockquote>
+
+{index headings, changing section number}
+{index section number, changing}
+{index heading number, changing}
+You can change the leftmost number in the section number with the
+{c chapter="<em>text</em>"} attribute. If you leave it out, the chapter
+number defaults to 1 for the first `<h1>`    // </h1>
+and increments with each subsequent `<h1>`.  // </h1>
+
+In fact, any time you specify a number in a `chapter=` attribute, numbering for the current chapter starts there, and normal incrementing
+occurs thereafter. 
+If you specify a single letter in the `chapter=`, the HML processor increments to the next letter (A to B, for example) for the next section.
+Here's the earlier example restated for an appendix: 
+
+<pre>
+<h1 chapter="A">Appendix</h1>	 // can't do a chapter= with = form, must use <hN>
+<h2>H2-Title</h2>
+<h3>H3-Title</h3>
+<h4>H4-Title</h4>
+<h1>Another Appendix</h1>
+<h2>H2-Title</h2>
+</pre>
+renders as
+<blockquote>
+<h1 toc="no" chapter="A">Appendix</h1>
+<h2 toc="no">H2-Title</h2>
+<h3 toc="no">H3-Title</h3>
+<h4 toc="no">H4-Title</h4>
+<h1 toc="no">Another Appendix</h1>
+<h2 toc="no">H2-Title</h2>
+</blockquote>
+
+You can actually use any arbitrary text in the `chapter=`, but
+anything other than a letter or number is just used as a prefix (without modification)
+for all subsequent headings.
+
+If you don't want HML to add section numbers, use `<h0>` instead of `<h1>`. //</h1></h0>
+If you call out the topmost heading with an `<h0>`,
+HML doesn't generate section numbers for subsequent `<h2>`'s, `<h3>`'s, etc.
+,	<h0>H0-Title</h0>   // or: = H0-Title =       <- No slash for no numbering
+,	<h2>H2-Title</h2>	// or: == H2-Title ==
+,	<h3>H3-Title</h3>	// or: === H3-Title ===
+,	<h4>H4-Title</h4>	// or: ==== H4-Title ====
+renders as
+<blockquote>
+<h0 toc="no">H0-Title</h0>
+<h2 toc="no">H2-Title</h2>
+<h3 toc="no">H3-Title</h3>
+<h4 toc="no">H4-Title</h4>
+</blockquote>
+
+Setting the `chapter=` attribute to an empty string has the same effect:
+,	<h1 chapter="">H0-Title</h1>
+,	<h2>H2-Title</h2>
+,	<h3>H3-Title</h3>
+renders as
+<blockquote>
+<h0 toc="no">H0-Title</h0>
+<h2 toc="no">H2-Title</h2>
+<h3 toc="no">H3-Title</h3>
+</blockquote>
+
+The `=heading=` notation expands to an `<h0>`, so there are no section numbers.
+An `=/heading=` expands to an `<h1>`, //</h1>
+so you get section numbering when you use the slash.
+
+Finally, note that if you use an `<h0>` within a document that's been using numbered headings, the numbering resets with the `<h0>`.
+For example
+,	<h1>H1-title</h1>
+,	<h1>Second H1-title</h1>
+,	<h0>H0-title</h0>
+,	<h1>Third H1-title</h1>
+,	<h1>Fouth H1-title</h1>
+displays as
+<blockquote>
+<h1 toc="no" chapter="1">H1-title</h1>
+<h1 toc="no">Second H1-title</h1>
+<h0 toc="no">H0-title</h0>
+<h1 toc="no">Third H1-title</h1>
+<h1 toc="no">Fouth H1-title</h1>
+</blockquote>
+
+You can use a `chapter=` to change the numbering following the `<h0>` if you need to do that.
+
+<h1 chapter="21" label="titleElements">Title elements: `<listing-title>`, `<figure-title>`, and `<table-title>`</h1>
+
+HML also supports automatic numbering of Listings, Tables, Figures, and
+easy references to both these and `<h`{i N}`>`-generated sections.
+
+In fact, you've already seen this feature in action with {table macroTable}.
+The following element preceded that table definition:
+<pre>
+	<table-title label="macroTable">HML Macros</table-title>
+</pre>
+and the element was displayed as follows:
+<blockquote>
+	<p><b>Table 2.1. HML Macros</b><br>
+</blockquote>
+
+{index `{figure ...}`)
+{index `{table ...}`)
+{index `{listing ...}`)
+{index `{figure-number ...}`)
+{index `{table-number ...}`)
+{index `{listing-number ...}`)
+{index figure, reference to}
+{index table, reference to}
+{index listing, reference to}
+Given the `label="macroTable"` attribute in the `<table-title>`,
+you can reference that table anywhere in your document,
+either before or after the `<`{c _xxx_}`-title>` element. Use one of the following pseudo-macros
+(they look like macros, but aren't), which evaluate to hot links to the label: //'
+
+|	{b This input:}						| {b displays as:}
+|	`{table macroTable}`				| {table macroTable}
+|	`{table macroTable visible text}` 	| {table-number macroTable visible text}
+|	`{table-number macroTable}`		 	| {table-number macroTable}
+|	`[#macroTable arbitrary text]`	 	| [#macroTable arbitrary text]
+
+The word {i macroTable}, in these examples,
+is the label specified in the original `<table-title label="macroTable">` tag.
+The last form is just the HML shorthand for a standard HTML link---it's identical to: 
+<pre>
+<a href="#macroTable">arbitrary text</a>
+</pre>
+be sure to include the leading `#` in the label name in this situation.
+
+There are identical mechanisms for Listings and Figures. Here's the complete set:
+
+|	`<figure-title  label="abc">The Title</figure-title>`	|	`{figure abc}`	|	`{figure-number abc}`	| `{figure abc visible text}`
+|	`<table-title   label="abc">The Title</table-title>`	|	`{table abc}`	|	`{table-number abc}`	| `{table abc visible text}`
+|	`<listing-title label="abc">The Title</listing-title>`	|	`{listing abc}`	|	`{listing-number abc}`	| `{listing abc visible text}`
+
+{index section, reference}
+{index reference, to section}
+{index `{section ...}`}
+
+== Section references = sectionRef
+
+Section reference work much like figure, table, and listing references.
+Assign a label with
+<block>
+`<h`{i N}` label="myLabel"> Title </h`{i N}`>`
+</block>
+or
+<pre>
+== Title == myLabel
+</pre>
+The current section was introduced with:
+<pre>
+=/ Section references = sectionRef
+</pre>
+so you can reference the sections as follows:
+
+|	`{section sectionRef}`			|	evaluates to | {section sectionRef}
+|	`{section-number sectionRef}`	|	evaluates to | {section-number sectionRef}
+|	`[#sectionRef arbitrary text]`	|	evaluates to | [#sectionRef arbitrary text]
+
+== Roll-your-own links == rollYourOwn
+
+If you don't //'
+like the visible text associated with
+`{section ...}`,
+`{figure ...}`,
+`{table ...}`,
+`{listing ...}`,
+`{note ...}`
+links,
+you can provide your own visible text with any of the standard link mechanisms.
+For example, the current section is introduced using:
+<pre>
+=/ Roll-your-own Links = rollYourOwn
+</pre>
+and you could also use 
+<pre>
+<h1 label="rollYourOwn">Roll-your-own Links </h1>
+</pre>
+Consequently, you can create a link using `[#rollYourOwn the current section]`, which displays as
+[#rollYourOwn the current section].
+
+Note that the link has to start with a hash mark, since it refers to a section within the current file. This is an HTML requirement.
+Internal links (introduced with a #) don't //'
+put a `target="_blank"` in the resulting HTML,
+so the browser just repositions the current page to the specified location.
+External links (without the `#`) cause a new page (typically in a new tab) to be displayed in the browser.
+
+The `[`...`]` is just HML shorthand for a link, and you can use raw HTML if you like. This HTML
+<pre>
+<a href="rollYourOwn">the current section</a>.
+</pre>
+works just like the earlier example.
+
+{index macros, user defined}
+=/ User-defined macros (`<`[!]`macro>...<`[!]`/macro>`) = userMacro
+
+Use a `<macro>` element to define your own macros.
+Define one macro per line, with the text to expand on the left, and the replacement text on the right:
+
+For example, this block:
+<block>
+`<macro>`
+`|my web site|<a href="http://www.holub.com" target="_blank">my web site</a>|`
+`</macro>`
+`On my web site.`
+</block>
+defines a macro and then expands that macro.
+(The macro replaces every instance of the phrase "my[!] web site" with a hyperlink to my [!]web site).
+The previous example displays as:
+<macro>
+|my web site|<a href="http://www.holub.com" target="_blank">my web site</a>|
+</macro>
+<block>
+On my web site.
+</block>
+
+The HML processor reads all `<`[!]`macro>` elements in the file, and then makes a
+single pass through the file and expands all the macros from all the blocks.
+It expands macros in the order you defined them.
+HML expands user macros before predefined macros,
+so your expansion text can contain any of these other macro types,
+or even redefine a predefined macro. The following works fine
+(it replaces `"`[!]`"`[!]`"abc"`[!]`"`[!]`"` with """abc""" using the
+predefined `{`[!]`i }` macro. (Syntax explained in next section):
+<block>
+`<`[!]`macro>`
+`|"""([A-Za-z]+)"""|{`[!]`i $1}|`
+`<`[!]`/macro>`
+</block>
+<macro>
+|"""([A-Za-z]+)"""|{i $1}
+</macro>
+
+Macros are expanded before most other tags are processed,
+so you can redefine any of the predefined macros, or even
+tags like `<listing>`, to do something else.
+For example, The default `= text =` macro actually expands to `<h1> text </h1>`.
+The normal `<h1>...</h1>` processing
+(which occurs after the macros are handled) does the actual work.
+
+The one exception to this rule are `<`[!]`import>` and `<`[!]`include>`
+statements, which are processed before any macros are processed.
+This processing order makes it possible
+to import custom-macro-definition files
+(that contain `<`[!]`macro>` statements),
+but you can't write a macro that redefines what `<`[!]`import>` does.
+
+Macros are processed in definition order,
+and are processed only once, from the top to the bottom of the document.
+Consequently, it can be risky for a user macro to expand to another user macro,
+because it's sometimes difficult to know which of the two will
+be processed first.  Circular or recursive definitions won't work either.
+
+== Macro categories == codeMacro
+
+{index macros, categories (`code:`, `text:`, `ref:`}
+{index `code:` macro type}
+{index `text:` macro type}
+{index `ref:` macro type}
+In general, macros expand only in the text portion of your document;
+they aren't expanded in `<listing>` or `<pre>` blocks. You can, however
+define a macro that {i will} expand in the code (but not in the text!) by adding a
+`code:` prefix to the macro definition.
+For example, the following macro causes all of the
+keywords in Java to be surround with a `<span class="hmlKeyword">` element.
+<pre>
+<macro>
+code:'(?<=\b)(\
+	abstract|assert|boolean|break|byte|case|catch|char|class|const \
+	|continue|default|do|double|else|enum|extends \
+	|final|finally|float|for|goto|if|implements|import|instanceof \
+	|int|interface|long|native|new|package|private|protected \
+	|public|return|short|static|strictfp|super|switch|synchronized \
+	|this|throw|throws|transient|try|void|volatile|while|true|false|null)(?=\b) \
+	'<span class="hmlKeyword">$1</span>'
+<macro>
+</pre>
+This macro expands only within code blocks (`<pre>` and `<listing>` elements).
+It won't impact normal text or code snippets.
+
+The backslash at the end of the line is a line-continuation indicator that tells the
+code that's loading the macro to concatenate the following line with the current line.
+This way you can put very-long macro definitions on multiple lines. The backslash
+and all surround white space (including space at the beginning of the next line) is
+ignored. This mechanism is supported only in macro definitions.
+
+<pending>
+Two additional macro categories are supported:
+| `snippet:`
+	| macros that are active only in code snippets
+| `ref:`
+	| macros that are active only an a reference-expansion pass that occurs very late in processing.
+
+At present, you can define `snippet:` and `ref:` macros, but your definitions are ignored.
+</pending>
+
+{index macros, file format}
+{index macros, defining}
+== Defining macros == macroFileFormat
+
+Default-macros (in {i hml.macros}, {listing hml.macros})
+and user-defined macros are both created
+using the same syntax.  The syntax is more complicated than the previous
+section would lead you to believe, but as long as you're doing something
+simple, you can ignore the complexity. The one thing you can't ignore is
+that there are a few special characters that have to be treated specially.
+
+{index macros, defining}
+Every macro definition takes the form:
+
+<block>
+{b '}{i text-to-replace}{b '}{i replacement-text}{b '}{i optional-flags}
+</block>
+
+The first character on the line is a delimiter that separates the three pieces
+of the definition,
+and can be any character of your choosing
+(except a space or tab). You can restate the above example as:
+
+<block>
+{b /}{i text-to-replace}{b /}{i replacement-text}{b /}{i optional-flags}
+</block>
+
+Just pick a character that's not otherwise used in the definition.
+Here's a macro that replaces the text `ytr` with the phrase `Yours truly`:
+<pre>
+/ytr/Your's truly/
+</pre>
+
+Here's another example that uses the `<head>` element ({section headElement})
+to define a new CSS style, and then a macro to define an HTML-like tag
+for notes to an editor. This way, you can put a note to an editor into a document
+by adding a
+<pre>
+<NB>Note to the editor goes here</NB>
+</pre>
+in the document. The note displays like this:
+<NB>Note to editor goes here</NB>
+
+Here's the input that implements that mechanism:
+<box>
+<pre>
+<head>
+	<style>
+		.NB { border: 1px solid red; color: red;
+			  margin: 1em 1em 1em 1em; width:100%;
+		}
+	</style>
+</head>
+<macro>
+'<NB>'<div class="NB">'
+'</NB>'</div>'
+</macro>
+</pre>
+</box>
+
+{index macros, special characters in}
+The following characters have special meanings in the _text-to-replace_ section:
+
+| Character | Do the following to take away special meaning
+|- 2
+|	`.`	 |	`\.`
+|	`+`	 |	`\+`
+|	`*`	 |	`\*`
+|	`?`	 |	`\?`
+|	`^`	 |	`\&`
+|	`$`	 |	`\$`
+|	`|`	 |	`\|`
+|	`{`	 |	`\{`
+|	`}`	 |	`\}`
+|	`[`	 |	`\[`
+|	`]`	 |	`\]`
+|	`(`	 |	`\(`
+|	`)`	 |	`\)`
+|	<code>\\</code>	 |	<code>\\[!]\\</code>
+
+and the following characters have special meaning in the _replacement-text_ section:
+
+| Character | Do the following to take away special meaning
+|- 2
+|	`&`	 |	`\&`
+|	`$`	 |	`\$`
+|	`%`	 |	`\%`   [########](_Unique to HML_)
+
+Either avoid these characters altogether or used the escaped (backslash-prefixed) forms unless you really know what you're doing.
+The _text-to-replace_ is actually something called a _regular expression_. (See {section regex}.) 
+
+{index macros, comments in definition}
+{index comments, in macro definition}
+The HML processor ignores: 
+* Lines that begin with a `#`
+* All text that follows a `##`
+* Whitespace at the very beginning or end of a line. You can't use whitespace as a delimiter.
+
+{index regular expression}
+{index expression, regular}
+=== Regular expressions === regex
+
+<box>
+Warning---this section is complicated, and only important if you plan to write complicated
+macros. Skip it if that's not the case.
+</box>
+
+As mentioned earlier, the _text-to-replace_ part of the macro definition is actually something called a _regular expression_. In fact, the characters with special meaning mentioned in the previous section all have meaning in a regular expression. To display a special character as itself, precede them it with a backslash ('\') to suppress its special meaning.
+A full discussion of regular expressions is beyond the scope of this document
+<note mark="\*" label="regex">
+	Read Jeffrey Friedl's book
+	{amazon 0596528124 _Mastering Regular Expressions_}. Also, there's
+	a good tutorial at [http://www.regular-expressions.info/].
+	The Rubular.com [http://rubular.com/ regular-expression tester] can help you try things
+	out dynamically, but it uses the Ruby regex syntax, which is slightly different than
+	HML's Java syntax, which is described on the
+	[http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html Java-`Pattern`-class documentation page].
+</note>,
+Here's the gist:
+
+Think of a regular expression as a sequence of characters.
+For example, the regular expression {i abc} matches the sequence
+{i a}, followed by
+{i b}, followed by
+{i c}.
+
+A `.` matches any character, so the expression `c.t` matches `cat`, `cut`, and any other three-letter sequence that begins
+with `c` and ands with `t`.
+
+A `*` says "match the previous character zero or more times.
+So, the expression `<.*>` matches a less-than symbol, followed by zero or more characters, followed by a greater-than symbol.
+It would match `<>`, `<a>`, `<abc>`, and so forth.
+
+Note that the `*` doesn't work like the `*` that many operating systems use to identify sets of files.
+For example, operating systems typically take `*.txt` to mean all names that end in `.txt`.
+That's not a legal regular expression, because the `.` means ```any''' character" and the `*`
+means ```the previous character repeated any number of times''' to the
+regular-expression processor. (In the case of `*.txt`, there is no "previous character.")
+You express the operating-system-style `*.txt` as the regular expression `.*\.txt`
+(any character repeated zero or more times followed by a literal dot---the backslash
+takes away the special meaning of the dot---followed by `txt`).
+
+In addition to `*`, you can also use `+` (the previous character repeated one or more times)
+and `?` (the previous character repeated zero or one times).
+Our earlier `.*\.txt` actually recognizes the string `.txt`, with nothing to the
+left of the dot. We should probably restate it as `.+\.txt` to require at least one character
+to the left of the dot.
+
+The default behavior of `.*` uses something called {i greedy matching},
+which means that the regular-expression system finds the longest possible
+input string that would match the expression. The earlier expression,
+`<.*>`, when presented with the input
+<pre>
+<abc> <def> <ghi>
+</pre>
+matches the entire input string (from the `<a` to the `i>`),
+because the `.` in the regular expression {i could} match '>', so the longest
+possible matching input is everything from the first `<` up to and including the last `>` (to
+the right of the `i`).
+
+Since the dot often matches too many characters, you can use
+brackets to indicate a limited set of characters that can be matched.
+For example, `[abc]` matches the single character `a`, `b`, or `c`, but nothing else.
+Something like `ca[rt]` matches `cat` or `car`, but nothing else.
+Specify a range of characters using a dash, for example
+`[a-z]` represents all lower-case letters and `[0-9]` represents all digits.
+`[a-zA-Z]` has two ranges, and represents all upper- and lower-case letters.
+This bracket-delimited set of characters is called a {i character class}.
+
+The `*`, `+`, and `?` operators can operate on an entire character class, too. 
+For example, the following expression recognizes only those text-file names that are made up of upper-case letters:
+<pre>
+[A-Z]+\.TXT
+</pre>
+The `+` operates on the entire character class `[A-Z]`, so the sub-expression means
+"one or more characters in the range A to Z."
+
+The replacement text in the second part of the macro definition uses special characters as well,
+For example, an `&` in the replacement text represents all the characters that matched the
+regular expression.
+The following expression replaces all occurrences of my name with a link to my[!] web site:
+<block>
+`|Allen Holub|[http:/`[!]`/www.holub.com &]`|
+</block>
+The macro expands to the HML markup for a link (`[url visible-text]`),
+and the `&` on the right is replaced by the text that
+matched the regular expression on the left (`Allen Holub`).
+
+Use parentheses to group input sequences. For example:
+<pre>
+(abc)+
+</pre>
+recognizes
+<block>
+abc
+abcabc
+abcabcabc
+...
+</block>
+You can also reference a particular
+group in the replacement text by using a `$` followed by a group number.
+Groups are numbered by the position of the open parenthesis,
+counting from left to right, with the leftmost group numbered as `$1`.
+For example, in
+<pre>
+/==>(.*)<==/<span style="font-size:14pt;">$1</span>/
+</pre>
+"group 1" comprises all characters contained in the first set of parentheses (`.*`),
+and those characters are inserted into the replacement text in place of the `$1`.
+This particular macro
+puts all characters between the `==>` and `<==` into 14-point type.
+The HML processor replaces the input
+<pre>
+==>BIG<==
+</pre>
+with
+<pre>
+`<span style="font-size:14pt;">BIG</span>`
+</pre>
+What if we wanted to specify the font size? The following macro has two groups:
+<pre>
+'([0-9]+)==>(.*)<=='<span style="font-size:$1pt;">$2</span>'
+</pre>
+The first one is a sequence of one or more digits (`([0-9]+)`) and is represented
+by `$1` in the replacement text.
+The second group is the zero or more characters inside the arrows (`(.*)`)
+and is represented by `$2` in the replacement text.
+So, in
+<pre>
+36==>Really big<==
+</pre>
+the HML processor replaces `$1` with `36` and `$2` with `Really Big`, yielding:
+<pre>
+<span style="font-size:36pt;">Really Big</span>
+</pre>
+which prints as
+<macro>
+'([0-9]+)==>(.*)<=='<span style="font-size:$1pt;">$2</span>'
+</macro>
+36==>Really big<==.
+
+There a few more loose ends. You can use a vertical bar (`|`) to indicate an "or" operation.
+The expression
+<pre>
+(dog|cat)
+</pre>
+recognizes either {i dog} or {i cat}
+Also, a `^` indicates "beginning of line" and `$` indicates end of line, so
+<pre>
+^cat
+</pre>
+recognizes `cat` only if it's the first thing on the line;
+<pre>
+dog$
+</pre>
+recognizes `dog` only if it's the last thing on the line, and
+<pre> 
+^cow$
+</pre>
+recognizes `cow` only if it's the only thing on the line.
+If you use the `^` or `$` in a macro definition, you must specify a `MULTILINE` flag as well.
+For example:
+<pre>
+<macro>
+	'^foo'Foo`MULTILINE
+</macro>
+</pre>
+replaces `foo` at the beginning of the line with `Foo`. The `MULTILINE` flag is required for the `^` to be recognized.
+
+That's all I'll be saying about regular expressions, but this discussion barely touches the surface.
+You should really read up on the subject if you want to do anything more complicated than what I've just described.
+See {note regex the notes} for suggestions. HML uses 
+[http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html Java-style regular expressions], and there's
+additional information about HML-specific processing in a comment at the top of the
+default {i hml.macros} file ({listing hml.macros}).
+
+
+{index titles}
+{index `<listing-title>`}
+{index `<figure-title>`}
+{index `<table-title>`}
+
+
+=/ Advanced code handling: <code>\`code\`</code>, `<listing>`, and `<pre>` = advanced-code
+
+As mentioned earlier,
+code is handled differently from the
+everything else in your document. 
+None of the standard HML mechanisms described elsewhere in this document
+apply to code blocks.
+Standard macros don't expand in code blocks, for example.
+In fact, you can use code snippets and blocks to document both HML and HTML. 
+
+For the most part, code appears exactly the same in the output as it looks in the input.
+
+== Explicit code blocks (`<listing>`, `<pre>`)
+
+{index `<listing>`)
+{index `<pre>`)
+{index code block}
+The `<listing>` and `<pre>` elements both designate code blocks. 
+(The comma-introduced lines described in {section easy-code} map to a `<pre>` block.)
+All code blocks are handled in much the same way. In fact,
+both `<pre>` and `<listing>` become HTML `<pre>` elements in the output (surrounded by a bunch of other markup,
+discussed in {section stylingCode}).
+The only real difference is that line numbers are added to the contents of
+`<listing>`, but not to `<pre>`, elements.
+
+As is the case with other HTML pseudo elements,
+any attributes that you specify in the tag that aren't meaningful to the
+tag itself are passed through to the underlying HTML, and your own styles
+preempt the default styles.
+For example, you could style your code and add an id with:
+<pre>
+<listing class="myClass" id="myID">
+</pre>
+If you look at the HML processor's output, you'll see that `<listing>`
+and `<pre>` are actually translated into a set of several
+nested `<div>` elements, but the attribute you specify in the input transfers to the innermost generated `<pre>` element, which holds the actual code. (The other `<div>` elements surround the line-number column at the left, and group that column together with the associated code. See {section stylingCode} for more information.)
+
+{index code block, substations in}
+== Substitutions Within listings (`& < > !<...>! !{...}! //!`) )
+
+The following substitutions are made everywhere in `<listing>` and `<pre>` elements.
+(With the exception of `//!`,
+these substitutions are actually done with `code:` macros defined in
+{i $CONFIG/hml.macros}, so you can redefine or remove them if you like.
+See {section codeMacro} and {listing hml.macros}.)
+
+<table-title label="listingSubs">Substitutions in Listings<table-title>
+<table border="1" cellspacing="0" cellpadding="4">
+[(] 
+`# comment`<br>
+`## comment`<br>
+`/* comment */`<br>
+`/* */`<br>
+`     // comment`<br>
+`     //`<br>
+`f(); // ` 
+[|]
+// style compensates for padding added in enclosing div.
+<pre style="position:relative; top:-1em; left: -2.5em;">
+# comment
+## comment
+/* comment */
+/* */
+     // comment
+     //
+f(); //  
+</pre>
+[|]
+Comments
+{index comments, in code}
+{index code, comments in}
+{index //, comments in code}
+{index #, comments in code}
+are styled specially, and empty comments are discarded, with the one exception of an
+empty to-end-of-line comment that's alone on the line, which is preserved so that you can do this:
+,	// A comment.
+,	//
+,	// More of the comment.
+
+These comment conventions handle the majority
+of common programming languages (bash, ksh, C, C++, C#, Java, Ruby, Python, etc).
+
+The `#` must be followed by another `#`, a space, dash, equal sign, or be at the end of the line to be
+recognized as a comment, and it must not be preceded by an ampersand;
+otherwise, it's treated as a normal character. You can change the regular expession used to
+recognize comments if these rules aren't to your liking or
+if you want to support the conventions of another language (see [#comment-config Appendix A]).
+[)]
+
+[(]`/*** `{i text}` */`	
+[|]
+<pre style="position:relative; top:-1em; left: -2.5em;">
+/*** elide me */
+</pre>
+[|]Javadoc comments that start with three or more stars are elided, and display exactly as shown at left.
+[)]
+
+[(]`&`			[|]	`&amp;`		[|][)]
+[(]`<`			[|]	`&lt;`		[|][)]
+[(]`>`			[|]	`&gt;`		[|][)]
+[(]`!<...>!`	[|]	`<...>`		[|] In a listing or pre block only (not in a ``...`` code snippet), `!<` and `>!` expand
+				to `<` and `>`. Without the eclamation points, they'd be converted to `&lt;` and `&gt;`.
+				Use this mechanism to put HTML markup into comments.
+				For example, this input:
+				<block>
+				`<pre>`
+				`foo(); // call foo !<b>!!<u>!NOW!</u>!!</b>!`
+				`</pre>`
+				</block>
+				displays as
+<pre>
+foo(); // call foo !<b>!!<u>!NOW!</u>!!</b>!
+</pre>
+[)]
+[(]`!&infin;` [|]	&infin;	 [|]
+						In a listing or pre block only (not in a ``...`` code snippet),
+						the leading `!` suppresses the normal conversion of ampersands to `&amp;` entities.
+						Use this mechanism to put HTML entities into your comments.
+						For example:
+						<block>
+						`<pre>`
+						`()=>( z+q ) // A !&#923; function`
+						`</pre>`
+						</block>
+						displays as
+,	()=>( z+q ) // A !&#923; function
+						Html entities are treated as a single character for purposes of tab expansion.
+[)]
+[(]
+<block style="margin-left:0in;">
+	`-----`
+	`//! <div style="border:1px solid red;">`
+	`hello();`
+	`//! </div>`
+	`-----`
+	` `
+	`-----`
+	`#! <div style="border:1px solid red;">`
+	`print 'hello'`
+	`#! </div>`
+	`-----`
+</block>
+[|]
+<pre style="margin-left: -2.5em;">
+-----
+//! <div style="border:1px solid red;">
+hello();
+//! </div>
+-----
+
+
+
+
+-----
+#! <div style="border:1px solid red;">
+print 'hello'
+#! </div>
+-----
+</pre>
+[|]
+	{index bang comment}
+	{index code block, HTML markup in}
+	{anchor bang-comment}
+	<p>
+	The sequence `#!` (for you Ruby/Python programmers)
+	works exactly the same way as `//!`.
+	<p>
+	This comment style forms a "bang comment."
+	The mechanism is handy for doing things like highlighting a block of several lines of code.
+	<p>
+	The three-character sequence `//!` (a single-line comment) is removed from the input,
+	but all text to its right remains in place untouched.
+	In the example at left, the `<div>` element remains in the output exactly as shown.
+	The `<` and `>` are not mapped to entities, for example. 
+	<p>
+	If there's nothing but white space to the left of the bang comment,
+	then the newline at the {i end} of the comment line is removed as well.
+	In other words, if the bang comment is alone on the line, the HTML in the bang comment is effectively prefixed to the line that follows 
+	the comment line.
+	<p>
+	This mechanism is different than `!<...>!` in a comment,
+	which leaves the comment symbol in place and doesn't get rid
+	of the newline. Compare the example at left to
+	<block>
+	`-----`
+	`// !<b>!`
+	`f();`
+	`// !</b>!`
+	`-----`
+	</block>
+	which displays as
+<pre>
+-----
+// !<b>!
+f();
+// !</b>!
+-----
+</pre>
+	Because bang comments can influence line numbering,
+	they're handled by the HML processor itself, not by a `code:` macro ({section codeMacro}).
+	Since `code:` macros are handled towards the end of listing processing---after the bang comments are processed---
+	you can't define a macro that expands to a bang comment.
+	[)] 
+
+</table>
+
+Tab character are expanded as 4-space tabs. Tabs are expanded very early in the processing,
+so the above substitutions won't effect the tab layout.
+Also, the tab-expansion code treats a `!<...>!` block
+as having no width---tabs are expanded as if it wasn't present.
+
+{index comments, in code}
+{index code block, comments in}
+Comments in the code are surrounded by a span element:
+<pre>
+<span class="hmlComment">// The comment!<span style="color:black;">! </span> !</span>!
+<span class="hmlComment">/*
+* The comment
+*/</span>
+</pre>
+The default CSS for `.hmlComment` formats the comment as shown, above, but you can change that in
+a `<style>` element within a `<head>` element ({section headElement}) if you want.
+
+A comment introduced with three slashes (`/// comment`) is removed entirely from the input. 
+This removal is done very early in the processing, so the comment shouldn't contain anything that's meaningful to HML.
+
+{index javadoc}
+{index comment, javadoc}
+Generally, Javadoc comments are more clutter than anything else when you're writing about code. Consequently,
+Javadoc comments are treated specially in one way: If the comment starts with three or more stars, it's elided in the output:
+This input:
+<block>
+`/******************************************************`
+` * Long Javadoc comment`
+` *   etc.`
+` *   etc.`
+` *   etc.`
+` */`
+
+`/** Normal Javadoc comment`
+` */`
+</block>
+displays as:
+<pre>
+/******************************************************
+ *   etc.
+ *   etc.
+ *   etc.
+ */
+
+/** Normal Javadoc comment
+ */
+</pre>
+
+Javadoc comments may not span `<listing>` or `<pre>` elements. //</PRE>
+but that's pretty much the only restriction.
+
+== `<listing>` and `<pre>` Attributes
+
+The `<listing>` and `<pre>` elements take several attributes:
+<dl>
+<dt>
+	prefix="xxx"
+</dt>
+<dd>
+	Specifies a string that can be used to disambiguate the various automatically generated references to class and method definitions
+	(described in {section autoTagging}).
+	For example, given
+	<block>
+	`<listing prefix="version2">`
+	`   public class Fred`
+	`   {	`
+	`       public void f()[]`
+	`   }`
+	`</listing>`
+	</block>
+	Without a prefix attribute, a typical reference would look like
+	`{#Fred}` (for the class) or `{#Fred.f}` (for the method).
+	If you specify a {i prefix="version2"}, then
+	you would now have to say `{#version2.Fred}` (note the dot after "2")
+	rather than `{#Fred}` and `{#version2.Fred.f}` rather than `{#Fred.f}`.
+	This attribute is handy when you have several listings that have duplicate declarations	in a single document, as might
+	be the case when you're describing different versions of the same code.
+</dd>
+<dt>file="xxx"</dt>
+<dd>
+	The file name (ideally the full path) for this listing.
+	Line numbers continue from the previous listing for the
+	same file rather than restarting at 1 if this attribute is specified.
+</dd>
+
+<dt>label="xxx"</dt>
+<dd>
+ 	If specified, HML passes it through to any generated `<listing-title>` elements.
+	If there's a `file=`, but no `label=`, then	the file name specified in the `file=` attribute
+	(the last component in the full path if a full path is specified) is used for the label.
+</dd>
+
+<dt>title="xxx"</dt>
+<dd>
+ 	If present, then a `<listing-title ...>` element is generated just above the
+ 	current `<listing>` element. If the attribute value is an empty string (`title=""`), as
+ 	compared to missing altogether, then the value of the `file=` attribute is used as the title. 
+	The generated `<listing-title>` includes a `label=` attribute that is identical to the `<listing>`
+	element's `label=` or, if the `label=` is missing, a <nobr>`label="`{ci file_name_from_file_argument}`"`</nobr> is 
+</dd>
+</dl>
+
+Defaults:
+|	<b><u>Attribute</u></b>		|	<b><u>Default</u></b>
+|	`file="`<em>path</em>`"`	|	None. If missing, then no default `label=` or `title=` is generated.
+|	`label="`<em>text</em>`"`	|	If the entire attribute is missing, use the file-name component of the <em>path</em> from the `file="`{i path}`"` attribute as the default label.
+|	`title="`<em>text</em>`"`	|	If {i text} is missing (e.g.,`title=""`), use <em>path</em> for title. If attribute is missing altogether, don't generate `<listing-title>` element at all.
+
+
+{index listing title, automatic generation}
+{index listing, `title=`}
+{index `title=`, in `<listing>`}
+== Automatic `<listing-title>` generation
+//'
+
+The `<listing-title>` elements are sometimes generated automatically.
+Here are the rules (with some examples in a moment):
+
+*	Whenever the `<listing>` tag has a `title="`{ci ABC}`"` attribute,
+	the HML processor creates a `<listing-title>ABC</listing-title>`
+	element immediately above the listing itself.
+*	If there's a `label=` attribute, then that attribute is inserted into the generated title element.
+*	If there's a `file=` attribute but no `label=`,
+	then the file name (the rightmost component of the path) is used for the title's label.
+*	If the title element is present, but empty (`<listing file="`{i path}`" title="">`),
+	the file name is used for both the title text and the label.
+
+There must be a `title=` attribute (even an empty one like `title=""` works)
+in the `<listing>` tag for the title to be generated
+automatically, and you must have a title to have a symbolic link to the entire listing.
+The following
+does not work.
+<block>
+	`<listing file="/Users/allen/projects/hml/Listings4.java">`
+	`    // code goes here...`
+	`</listing>`
+	`{Listings4.java}` {b &larr; ERROR (No `title=` in `<listing>`, so no caption, so no label.)}
+</block>
+
+This behavior is necessary because you might want to pull in an untitled listing into your document
+using an `<include>` tag.
+The  `<include>` processing adds a `file=` attribute to the generated `<listing>` element, however.
+If the system created a `title=` whenever a `file=` was present, then all included listings would be titled.
+
+When the title is empty (`title=""`), the generated title is just the file name,
+not the entire path,
+even if the entire path is passed in `listing`'s `file="`{i path}`"` attribute.
+If that's not what you want,
+just spell out the full path in a `title="/full/path/name/to/file.java` attribute.
+
+Examples:
+
+<box>
+This input
+<block>
+	`<listing file="/Users/allen/projects/hml/`<b>`Listings1.java`</b>`" title="Listing Support 1">`
+	`     // code goes here...`
+	`</listing>`
+</block>
+displays like this:
+<p>
+<listing file="/Users/allen/projects/hml/Listings1.java" title="Listing Support 1">
+// code goes here...
+</listing>
+
+and can be referenced using `{listing `<b>`Listings1.java`</b>`}`, which displays as {listing Listings1.java},
+or with `[#Listings1.java my text]`, which displays as [#Listings1.java my text].
+</box>
+
+<box>
+This input
+<block>
+	`<listing file="/Users/allen/projects/hml/Listings2.java" title="Listing Support 2" `<b>`label="`<i>`MyLabel`</i></b>`">`
+	`    // code goes here...`
+	`</listing>`
+</block>
+displays like this
+<blockquote>
+<listing file="/Users/allen/projects/hml/Listings2.java" title="Listing Support 2" label="MyLabel">
+// code goes here...
+</listing>
+</blockquote>
+and can be referenced using `{listing `<b><i>`MyLabel`</i></b>`}`, which displays as {listing MyLabel},
+or with `[#MyLabel my text]`, which displays as [#MyLabel my text].
+</box>
+
+<box>
+This input
+<block>
+`	<listing file="/Users/allen/projects/hml/`<b>`MyFile.java`</b>`" title="">`
+`	    // code goes here...`
+`	</listing>`
+</block>
+displays like this
+<blockquote>
+<listing file="/Users/allen/projects/hml/MyFile.java" title="">
+    // code goes here...
+</listing>
+</blockquote>
+and can be referenced using `{listing `<b>`MyFile.java`</b>`}`, which displays as {listing MyFile.java},
+or with `[#MyFile.java my text]`, which displays as [#MyFile.java my text].
+</box>
+
+<box>
+`<listing>` elements with no attributes just show the code and line numbers (without any sort of title).
+You can create the `<listing-title>` element manually if you want to.
+This input:
+<block>
+	`<listing-title label="x">Manual Title</listing-title>`
+	`<listing>`
+	`// code goes here.`
+	`</listing>`	
+</block>
+displays like this:
+<blockquote>
+<listing-title label="x">Manual Title</listing-title>
+<listing>
+// code goes here.
+</listing>
+</blockquote>
+and can be referenced using `{listing `<b>`x`</b>`}`, which displays as {listing x},
+or with `[#x my text]`, which displays as [#x my text].
+
+</box>
+
+{index references, to lines in listings}
+{index listings, references to lines in}
+== Referencing listing lines in your document == lineReferences
+
+The HML processor generates listing line numbers automatically, and you can reference these
+line numbers symbolically in your document. That way, the references in the document change
+automatically as the code changes. There are two ways to handle symbolic references.
+
+{index tags, manual}
+{index lines, marking for reference}
+{index code block, marking lines}
+{index `{=name}`}
+{index symbolic reference (`{=name}`)}
+{index reference, symbolic in listing (`{=name}`)}
+=== Manual tags === marks
+
+In any code block (but not a code snippet),
+you can use <code>{=name}</code> to define a symbolic reference to a line (i.e., to "tag" the line).
+Typically you'll put the tag in a comment.
+You can then reference that tagged line in your text by name.
+
+For example, this input
+<block>
+`<listing label="myFile.java" title="Example Listing">`
+`public int f()`
+`{`
+`	return 0;	// {= myTag}`
+`}`
+`</listing>`
+</block>
+displays as follows (note that the tag is not displayed,
+and since the comment holding the tag would be empty without it, the comment is removed as well):
+<listing label="myFile.java" title="Example Listing">
+public int f()
+{
+	return 0;	// {= myTag}
+}
+</listing>
+The tag (`{= myTag}`) works only in a code block, and can be expressed
+with optional exclamation points (e.g., `!{= myTag}!`).
+
+{index reference, to line in listing}
+{index symbolic reference, to line in listing}
+{index `{sref `{i id}`}`}
+{index `{ref `{i id}`}`}
+In your document, you can reference the tag in several ways. (I'll explain these in depth in a moment):
+<block>
+...`{listing myFile.java}, line {# myTag}`
+...`on line {# myTag}`
+...`the `return` statement on {line myTag}`
+...`[# the `return` statement]`
+...`{: myTag}`
+...`the `return` statement ({ref myTag})`
+...`the `return` statement ({sref myTag})`
+</block>
+which display as:
+<block>
+...{listing myFile.java}, line {# myTag}
+...on line {# myTag}
+...the `return` statement on {line myTag}
+...[# the `return` statement]
+...{: myTag}
+...the `return` statement ({ref myTag})
+...the `return` statement ({sref myTag})
+</block>
+The explicit references to `myTag` in the displayed version of the last
+few examples make more sense when we look at auto-generated tags in {section autoTagging}.
+Auto-generated tags are the class, interface, or field name, not arbitrary text.
+
+{index `lable=`, in `<listing-title>` required for `{ref...}` or `{sref...}`}
+The listing must have a `label=` attribute if you intend to use the
+`{ref ...}` or `{sref ...}` references.
+
+Though it doesn't make sense to use most of the line-number references
+to discuss code in a `<pre>` (or comma-introduced) block,
+which has no line numbering,
+a link reference (`[#tag text]`) works just fine in a `<pre>` block.
+
+The following reference syntax is recognized everywhere in the document, even
+in code blocks.
+
+| <b>`{: `{i id}`}`</b>
+	|	{index `{: `{i id}`}`}evaluates to the name of the method as a hot link to the declaration.
+		<p>
+		This reference can also take an argument of sorts: All
+		text that follows the <em>id</em> is inserted into the
+		visible text following the id. This extra text can
+		be separated from the text with a space (which is
+		not added to the output), but any character that's
+		not legal in a java identifier can also indicate the start of that extra text.
+		For example, `{: x (...)}` (with a space) and `{: x(...)`} (without a space) display as `x(...)`.
+		(an open parenthesis is not legal in an identifier).
+		Hml doesn't handle method overloading, so specifying method types in the tag has no effect other than changing
+		the visible text. The reference is to the last declaration processed.
+		<p>
+		As we saw earlier,
+		the visible results of a `{: ...}` reference can be surprising with manually marked lines.
+		(Given `{=xxx}` on a listing line, `{: xxx}` evaluates to a link with the visible text <code>xxx</code>.)
+		They make much more sense with automatically generated tags, discussed below.
+		<p>
+		The `{: label}` notation works just fine in a `<pre>` block (where no line numbers are present).
+//
+| <b>`{# `{i id}`}`</b>
+	|	{index `{# `{i id}`}`} evaluates to the line number as a hot link to the declaration or marked line.
+		Use this notation only for code in `<listing>` blocks (the line number is
+		indeterminate in `<pre>` blocks).
+//
+| <b>`{line `{i id}`}`</b>
+	|	{index `{line `{i id}`}`} like `{# id}` but evaluates to the phrase {i line N}, where {i N}
+		is the line number on which {i id} is found.
+		Use this notation only for code in `<listing>` blocks (the line number is indeterminate
+		in `<pre>` blocks).
+//
+| <b>`{ref `{i id}`}`</b>
+	|	{index `{ref `{i id}`}`} like `{# id}` but evaluates to the phrase {i id (Listing X, line Y)}
+		It's effectively shorthand for
+		<block>
+		`{: id} ({listing foo}, {line id})`
+		</block>
+		Where {i foo} is the label associated with the `<listing-title label="foo">`
+		element just above the current listing.  Any text following the {i id} is put into
+		the visible text of the hotlink, exactly like `{: foo()}`.
+		Use this notation only for code in `<listing>` blocks
+		(the line number is indeterminate in `<pre>` blocks).
+//
+| <b>`{sref `{i id}`}`</b>
+	|	{index `{sref `{i id}`}`} A short reference;
+		like `{ref `{i id}`}`, but doesn't show the listing number. That is,
+		`{ref foo()}` renders as {i foo() (line X)}.
+		Use this notation only for code in `<listing>` blocks
+		(the line number is indeterminate in `<pre>` blocks).
+
+=== Automatic tagging for Java source code=== autoTagging
+
+{index automatic tagging}
+{index java, tagging declarations}
+{index declarations, tagging automatically}
+If you're writing in Java, the HML processor recognizes class
+and method definitions and automatically tags those lines. (Support for other languages
+is high on the to-do list, but for now, Java is it.)
+
+For example, this input
+<block>
+`<listing>`
+`class ClassName`
+`{`
+`	public void f()`
+`	{`
+`	}`
+`}`
+`</listing>`
+</block>
+
+displays as
+
+<listing>
+class ClassName
+{
+	public void f()
+	{
+	}
+}
+</listing>
+
+and a reference like
+<block>
+`{: ClassName.f()} on line {# ClassName.f}`
+</block>
+in your document renders as
+<block>
+{: ClassName.f()} on line {# ClassName.f}
+</block>
+
+The HML processor recognizes definitions with pattern matching,
+not a real parser, so it can be fooled by nonstandard formatting.
+The following rules are followed:
+<ol>
+<li>Method and field declarations must begin with an access privilege
+(<code>public</code>, <code>private</code>, <code>protected</code>, or the string `/*package*/`).
+<li>
+The method/field name must be on the same line as the access privilege.
+<li>
+Method/field names must be followed immediately by a comma, semicolon, open parenthesis, or equals sign.
+<li>
+Class or interface names must be on the same line and immediately follow the keyword `class` or `interface`.
+</ol>
+This simplistic approach means that declarations like the following don't work:
+
+<pre>
+public int x,y; // two variables declared on one line. y is not tagged.
+public int z[]; // The brackets must follow the int, not the z.
+
+public int f			// The ( that starts argument list must
+	(int abc, int def)	// be on the same line as method name.
+ 
+public
+int g()		// public must be on same line as function definition
+</pre>
+
+The following definitions work fine, however:
+
+<pre>
+public int x;
+public int y;
+public int[] z;
+public int f(	int abc,
+				int def );
+public int g()
+</pre>
+
+You may split a class definition across listings, 
+but you must put the entire method definition in a single code block.
+
+Inner classes are handled properly, but you must reference them with the full name.
+
+So, here's a complete example that demonstrates all the possibilities.
+
+This input:
+<block>
+`<listing file="foo.java" label="exampleListing" title="Example Listing">`
+`public class Outer`
+`{`
+`	private int v1;`
+`	public int f()`
+`	{	return 0; // {= return}`
+`	}`
+
+`	public class Inner`
+`	{`
+`		private int v2;`
+`		public void g()`
+`		{`
+`		}`
+`	}`
+`}`
+`</listing>`
+</block>
+
+displays as
+
+<listing file="foo.java" label="exampleListing" title="Example Listing">
+public class Outer
+{
+	private int v1;
+	public int f()
+	{	return 0; // {= return}
+	}
+	public class Inner
+	{
+		private int v2;
+		/*protected*/ void g()
+		{
+		}
+	}
+}
+</listing>
+
+{java, inner-class references}
+{symbolic references, to java declarations}
+and you can use the following references:
+
+|*Input*				|*Displays As*
+|- 2
+| `{listing exampleListing}` | {listing exampleListing}
+| `{listing-number exampleListing}` | {listing-number exampleListing}
+|- 2
+|`{: Outer}`			| {: Outer}
+|`{# Outer}`			| {# Outer}
+|`{line Outer}`			| {line Outer}
+|`{ref Outer}`			| {ref Outer}
+|`{sref Outer}`			| {sref Outer}
+|`[#Outer some text]` 	| [#Outer some text]
+|- 2
+|`{: Outer.Inner}`			| {: Outer.Inner}
+|`{# Outer.Inner}`			| {# Outer.Inner}
+|`{line Outer.Inner}`		| {line Outer.Inner}
+|`{ref Outer.Inner}`		| {ref Outer.Inner}
+|`{sref Outer.Inner}`		| {sref Outer.Inner}
+|`[#Outer.Inner some text]` | [#Outer.Inner some text]
+|- 2
+|`{: Outer.v1}`			| {: Outer.v1}
+|`{# Outer.v1}`			| {# Outer.v1}
+|`{line Outer.v1}`		| {line Outer.v1}
+|`{ref Outer.v1}`		| {ref Outer.v1}
+|`{sref Outer.v1}`		| {sref Outer.v1}
+|`[#Outer.v1 some text]`| [#Outer.v1 some text]
+|- 2
+|`{: Outer.f}`			| {: Outer.f}
+|`{: Outer.f()}`		| {: Outer.f()}
+|`{# Outer.f}`			| {# Outer.f}
+|`{line Outer.f}`		| {line Outer.f}
+|`{ref Outer.f}`		| {ref Outer.f}
+|`{ref Outer.f()}`		| {ref Outer.f()}
+|`{sref Outer.f}`		| {sref Outer.f}
+|`{sref Outer.f()}`		| {sref Outer.f()}
+|`[#Outer.f some text]`	| [#Outer.f some text]
+|- 2
+|`{: Outer.Inner.v2}`			| {: Outer.Inner.v2}
+|`{# Outer.Inner.v2}`			| {# Outer.Inner.v2}
+|`{line Outer.Inner.v2}`		| {line Outer.Inner.v2}
+|`{ref Outer.Inner.v2}`			| {ref Outer.Inner.v2}
+|`{sref Outer.Inner.v2}`		| {sref Outer.Inner.v2}
+|`[#Outer.Inner.v2 some text]`	| [#Outer.Inner.v2 some text]
+|- 2
+|`{: Outer.Inner.g}`			| {: Outer.Inner.g}
+|`{: Outer.Inner.g()}`			| {: Outer.Inner.g()}
+|`{# Outer.Inner.g}`			| {# Outer.Inner.g}
+|`{line Outer.Inner.g}`			| {line Outer.Inner.g}
+|`{ref Outer.Inner.g}`			| {ref Outer.Inner.g}
+|`{ref Outer.Inner.g()}`		| {ref Outer.Inner.g()}
+|`{sref Outer.Inner.g}`			| {sref Outer.Inner.g}
+|`{sref Outer.Inner.g()}`		| {sref Outer.Inner.g()}
+|`[#Outer.Inner.g some text]`	| [#Outer.Inner.g some text]
+|- 2
+|`{: return}`			| {: return}  [########]{i (`return` is the tag name)}
+|`{# return}`			| {# return}
+|`{line return}`			| {line return}
+|`{ref return}`			| {ref return}
+|`{sref return}`			| {sref return}
+|`[#Outer the return statement]` 	| [#Outer the return statement]
+
+
+== `<pre>` and `<listing>` blocks require proper nesting
+
+{index `<pre>`, nesting}
+A `<pre>` element can contain another `<pre>` element, but only if the `<pre>` elements are
+properly nested. For example, the following works correctly:
+<pre>
+<pre>
+	/** A Javadoc comment has a pre block in it:
+	 *  <pre>
+	 *  codeExample();
+	 *  </pre>
+	 */
+</pre>
+</pre>
+However, you can't use a `<pre>` without the matching `</pre>`.
+
+The same rule applies to listings, and `<pre>` blocks within `<listing>` blocks.
+
+=/ Advanced use of `<include>` = advanced-include
+
+When you use an `<include>`, the HML processor effectively surrounds the included code with a
+`<listing file='`{i full/path/to/source/file}`'>...</listing>` element.
+
+The generated `listing` element always
+includes a `file=` attribute that holds the name of the included file. 
+All other attributes are transferred from the `<include>` to the generated `<listing>` element.
+Since the presence of a (passed through) `title=` in the `listing` element causes a `<listing-title>` to be generated,
+you can bring a full listing, along with its title, into your document with a simple
+,	<include src="/path/to/file.java" title="The title">
+which is equivalent to
+,	<listing-title label="file.java">The Title</listing-title>
+,	<listing file="/path/to/file.java" title="The title">
+,	<import src="/path/to/file.java">
+,	</listing>
+
+You can use a normal `{listing file.java}` tag to reference the generated title.
+
+When you supply a label at the `<include>` level, that label passes through to the generated `<listing-title>`. So:
+<block>
+`<include src="/path/to/file.java" title="The title" label="MyLabel">`
+...
+`{listing MyLabel}`
+</block>
+works as expected.
+
+== `<include>` and `<import>` attributes ==
+
+{index `<include>`, arguments}
+{index `<import>`, arguments}
+The following attributes are recognized in both `<include>` and `<listing>` tags:
+
+| `from="`_pat_`"`
+	| All lines above
+	the first one that contains a match of the regular expression _pat_ are ignored.
+	The line that contains the match is included.
+	Note that this flag applies to the entire line, you can't //'
+	use it to extract part of a line.
+	Also note that the pattern is a regular expression, so any characters that are meaningful to regular
+	expressions (e.g., you must escape parenthesis and brackets for HML to process them literally.)
+	Neither the the less-than (&lt;) nor greater-than (&gt;) characters may be used in the pattern.
+	//
+| `to="`_pat_`"`
+	| All lines following
+	the first one that contains a match of the regular expression _pat_ are ignored.
+	The line that contains the match is included.
+	The pattern rules discussed in the `from=` attribute apply here, too.
+	//
+| `remove-mark="`_\[true\|false\]_`"`
+	| If true, then whatever text is used as the argument
+	to a `from=` or `to=` attribute is removed from the input.
+	If the argument text along with any leading or trailing whitespace comprises the entire line, then
+	the entire line is removed.
+	Default is false.
+	//
+| `line-numbers="`_\[true\|false\]_`"`
+	| If false, generate a `<pre>` instead of a `<listing>` element.
+	//
+| `first-line="`_N_`"`
+	| Use N (must be a digit) for the first line of the listing. Normally, if you use `from=` and `to=`
+		to look at a large file in chunks (using several `<include>` statements) line numbering carries
+		over from one listing to another. The starting number of the second `<include>` for a given file
+		will be one more than the last line number in the first `<include>`. Use this directive to set the
+		number to something arbitrary.
+	//
+| `label="`_text_`"`
+	| The attribute is copied to the generated `<listing>` element.
+	//
+| `prefix="`_text_`"`
+	| The attribute is copied to the generated `<listing>` element.
+	//
+| `title="`_text_`"`
+	| The attribute is copied to the generated `<listing>` element. Forces generation of a
+		`<listing-title>`
+
+<p>
+Use the `from=` and `to=` attributes to pull in only part of a listing. The associated pattern
+is a regular expression identical to the ones used for macro definitions (see {section regex}).
+All lines from the one that matches the `from=` pattern up to and including the line that matches
+the `to=` patterns are pulled in.
+For example, given the following java file:
+
+<pre>
+// stuff
+
+public void g()
+{	//...
+}
+
+public void f()
+{	//...
+}
+
+// more stuff
+</pre>
+
+You can include just the `f()` method in your document with:
+<block>
+`<include src="..." from="public.*f()" to="^\s*}$">`
+</block>
+This example assumes that the `f()` method contains no close braces other
+than the final one at the end of the method, of course. You can, however, use the
+`remove-mark` attribute to solve that problem. For example, given
+<pre>
+// stuff
+
+//start-f
+/** A comment
+ */
+public void f()
+{
+}
+//end-f
+
+// more stuff
+</pre>
+You can pull in both the `f()` and the preceding comment with:
+<block>
+`<include src="..." from="//start-f" to="//end-f" remove-mark="true">`
+</block>
+
+Finally, any `label=`, `prefix=`, or `title=` attribute found in an `<include>` tag
+are simply passed through to the generated `<listing>` or `<pre>`
+element along with any other attributes that the `<include>` tag doesn't
+know about.  Consequently, you can specify `<listing>` properties in the `include` tag and
+they'll pass right through to the `<listing>`.
+Remember that a `class=` attribute that you provide preempts the
+default `<listing class="hmlListing">`, so you can even provide your own CSS class in the
+`<include>`,
+and it passes all the way through to the innermost `<pre>` block that actually holds the code.
+
+The listings in [#section.appendixA Appendix A] were all imported into
+the document with the following markup. Title and `<listing>` elements
+were automatically generated.
+<pre>
+<include src="/Users/allen/config/hml.head" title="" label="hml.head">
+<include src="/Users/allen/config/hml.tail" title="" label="hml.tail">
+<include src="/Users/allen/config/hml.macros" title="" label="hml.macros">
+</pre>
+
+<pending>
+== Using Dropbox == dropbox
+
+{index dropbox}
+HML in the cloud has one significant limitation: it can't pull in files from your local disk.
+The HML processor solves that problem with Dropbox. 
+For those of you who don't know, Dropbox is an online synchronization service. Once you
+install Dropbox on your machine, everything that you put into your Dropbox folder is
+{i mirrored} (a copy is automatically made) to your online Dropbox account. If several computers
+share a single Dropbox account, the Dropbox folders are all kept in sync with each other automatically.
+
+The HML processor integrates seamlessly with Dropbox.
+When the path you specify in a `src=` attribute to a `<include>` or `<import>` element includes the word `Dropbox`,
+then the HML-in-the-cloud processor automatically pulls the file from dropbox.
+A local HML processor just reads the file from the specified folder on your local hard disk.
+For example, if you say:
+<pre>
+<include src="~/Dropbox/src/myproject/file.java">
+</pre>
+the local processor looks for _file.java_ in the specified local folder, but the HML-in-the-cloud processor looks for that
+file in the {i /src/myproject} folder of your on-line Dropbox account.
+
+All this requires a Dropbox account.
+Go to [http://www.dropbox.com the Dropbox web site] and click {i Sign Up}.
+After the Dropbox sign up procedure, set up Dropbox access in your HML-in-the-cloud account.
+HML-in-the-cloud doesn't need your Dropbox password.
+Log on to Dropbox and authorize HML-in-the-cloud to access the account. Here's how:
+
+TODO
+</pending>
+
+=/ Differences from _MediaWiki_
+
+{index MediaWiki, differences from}
+The fact that HML markup is much more powerful than either _Markdown_ or _MediaWiki_
+markup comes at a cost.
+HML can't support some conventions.
+Bear in mind that the _MediaWiki_ conventions are meant to {i replace}
+HTML but HML {i augments} HTML, so
+you can always fall back to standard HTML markup to do something complicated in an HML document.
+
+Here are few of the most obvious differences between HML and {i MediaWiki}/{i Markdown} markup.
+
+* MediaWiki and Markdown treat all indented lines as code blocks.
+	HML requires that you either prefix the line with a comma, or surround the code with a `<pre>` or `<listing>` element.
+	HML uses indentation in many other ways, so it wasn't feasible to mimic MediaWiki, here.
+	It's impossible to use a macro to simulate MediaWiki-style indented code because macros are effectively processed
+	after the code blocks are isolated from the text.
+
+* HML doesn’t support the multiple-tick-mark convention for bold and italic.
+	<blockquote>
+	<table>
+	[(] _MediaWiki_				[|]	[] [!] HML								[)]
+	[( colspan="3"]<hr> [)]
+	[(]	`''italic''`			[|]	[] [!] `{i italic}` or `_italic_`		[)]
+	[(] `'''bold'''`			[|]	[] [!] `{b italic}` or `*italic*`		[)]
+	[(] `'''''bold italic'''''`	[|]	[] [!] `{bi italic}` or `*_italic_*` or `_*italic*_` [)]
+	</table>
+	</blockquote>
+	`{b {i text}}` doesn't work. Either use `{bi text}` or `_*text*_`.
+* HML doesn’t allow nested lists ({section lists}) inside of lists, or columnar data ({section tabbed})
+	inside of any of these. You can use the `[(]`...`[|]`...`[(]` to put tabular data in a list,
+	but you must use HTML elements (`<ol>` and `<ul>`) to get nested lists. The same goes for bullet or numeric lists
+	inside tabular data. You can use `|` for the outer table, but must use HTML elements for lists within the table.
+* The _MediaWiki_ `<nowiki>` element is not supported. The only way to protect text, at present,
+	is to use a code block of some sort.
+
+=/ Attribute pass through = passthrough
+
+{index element attributes (arguments), pass through}
+{index attribute, propogation}
+{index attribute, pass through}
+{index argument, pass through}
+HML defines several HTML-like elements that work syntactically like standard HTML.
+For example, HML's `<block>`...`</block>` element works much like HTML's `<blockquote>`,
+but automatically adds line breaks to every line in the block.
+
+The main consideration with all these HML-specific elements is that they "wrap" standard HTML elements in the sense that the HML processor translates the special element into one or more standard HTML elements. A `<block>`, for example, is ultimately translated to a `<blockquote class="hmlBlock">` in the output.
+Every HML-generated element has an hml class associated with it in this way, so that you can easily style any generated HTML. (All HML classes start with the `hml`... prefix.)
+
+{index class=, replace hml with custom}
+You can, however, define a custom CSS class and use that in the generated HTML.
+A custom `class=` replaces the default in the tag,
+other attributes just pass through to the generated element. For example:
+
+,	<block class="mySpecialBlock" id="myID">
+,	content
+,	</block>
+
+your `class=` replaces the default, and the `id=` attribute, which isn't meaningful to HML,
+passes through.
+HML generates the following output from the earlier input:
+
+,	<blockquote class="mySpecialBlock" id="myID">
+,	content<br>
+,	</blockquote>
+
+instead of the default
+
+,	<blockquote class="hmlBlock">
+,	content<br>
+,	</blockquote>
+
+Similarly, a `style="..."` attribute is meaningless to a `<block>` element, so when you say:
+<pre>
+<block style="font-style:italic;">
+   ...
+</block>
+</pre>
+the style passes through to the generated `<blockquote>`, and the block contents are set in italic.
+
+In general, the HML processor adds a `class=` attribute to every generated element. (Exceptions are things like
+`<td>` elements, because those are enclosed within a generated element that {i does} contain a class, so you
+can style them using CSS's `inner outer {...}` mechanism.
+However, if you specify an explicit `class="..."` attribute, then HTML will use your class attribute
+rather than the automatically generated one.
+For example, the processor typically transforms `<listing ...>` into `<pre class="hmlListing">`;
+however, if you say,
+<block>
+`<listing class="myClass">`
+</block>
+the generated element will look like this
+<block>
+`<pre class="myClass">`
+</block>
+Same applies to things like `block`. Here are a few examples:
+
+|	<b>Input</b>				|	<b>Output</b>				 			|	<b>Notes</b>
+|- 3
+| `<h1 label="x" chapter="y" class="z">` | 	`<h1 class="z">`				| `chapter=` and `label=` are absorbed. Other attributes pass through. //</h1>
+|- 3
+| `<block>`						| 	`<table class="hmlBlock">`				| No attributes are absorbed
+| `<block id="y">`				| 	`<table id="y" class="hmlBlock">`		|
+| `<block class="x" id="y">`	| 	`<table id="y" class="x">`				|
+|- 3
+| `<pre>`						| 	`<pre class="hmlPre">`					| The `file=`, `label=`, `prefix=`, and `title=` elements are absorbed.
+| `<pre id="y">`				| 	`<pre id="y" class="hmlPre">`			|
+| `<pre class="x" id="y">`		| 	`<pre id="y" class="x">`				|
+|- 3
+| `<listing>`					| 	`<pre class="hmlListing">`				| The `file=`, `label=`, `prefix=`, and `title=` elements are absorbed. 	
+| `<listing id="y">`			| 	`<pre id="y" class="hmlListing">`		|
+| `<listing class="x" id="y">`	| 	`<pre id="y" class="x">`				|
+|- 3
+| `<`[!]`include file="x">`		| 	`<listing file="x" class="hmlListing">`	| Absorb `src=`, `href=`, `from=`, `to=`, `remove-mark=`, `line-numbers=`,
+| `<`[!]`include title="..." class="x">`
+		| `<listing-title>...</listing-title>`<br>`<listing class="x">`...`</listing>`
+		| Attributes pass through to `<listing>` element, not `<listing-title>`
+|- 3
+| `<`[!]`include src="x" ... numbers="true">`	| 	`<listing file="x">`	| No class= is added, but `<listing>` processing adds one.
+| `<`[!]`include href="x" ... numbers="false">`	| 	`<pre file="x">`		| No class= is added, but `<pre>` processing adds one.
+
+{index `<head>`}
+{index head}
+{index CSS, adding to head}
+=/ Adding styling, titles, etc. using `<head>...</head>` = headElement
+
+Your document's `<head>` // </head>
+section is buried in a configuration file called {i hml.head} ({section config}),
+and the default HML CSS styles are defined there.
+To change or augment that CSS, you need to add a `<style>` element, however, that `<style>` element
+must also go into the `<head>`.
+The same goes for page titles (i.e.,`<title>` elements, etc.).
+You don't //'
+really want to modify the configuration file to do any of that,
+because configuration-file modifications affect everything you process,
+not just the current document.
+
+HML solves the problem by {i moving} the contents of all `<head>` elements that
+it finds in the body of your document into the real `<head>` element, which it
+extracts from {i hml.head}.
+Your contents are appended to the {i end} of the real (output) `<head>` element,
+so your local styles preempt or augment default styles in the default `<head>` definition.
+
+For example, you could add a title to your document and also
+redefine one of the default HML styles by putting the following into your document.
+<pre>
+<head>
+	<title>MyTitle</title>
+	<style>
+	.hmlComment{ color: gray; } /* put comments in gray rather than green */
+	</style>
+</head>
+</pre>
+
+If you specify multiple `<head>`  // </head>
+elements in your document, the processor appends them all to the output `<head>`  // </head>
+element in the order they appear in the document.
+
+{index styling}
+=/ Styling = styling
+
+All HML-generated HTML elements have a `class=` attribute, and all the class names start with an `hml`...prefix.
+This section describes a few of the less-obvious styling issues, but if something's not covered here, just
+make a small file, run it through HML, and look at the output to see the style names.
+
+The easiest way to style a single element is to simply pass a `class=` or `style=` attribute to the element.
+Those attributes are passed through to the generated HTML, as described in {section passthrough}.
+
+The
+{index hml.head}
+{index hml.tail}
+CSS styles that HML uses come from the default header file.
+That is, the HML processor inserts two files the output file ([#config Appendix A]): 
+
+| hml.head	| ({listing hml.head}) is inserted at the top of the output file, before all the processed input.
+| hml.tail	| ({listing hml.tail}) is inserted at the bottom of the output file, after all the processed input.
+
+{i hml.head} holds all the CSS for the generated document.
+This CSS is inserted directly into the output file,
+not imported, so that the output file can stand alone.
+There are no external dependencies that would make it difficult to view the document offline in your browser.
+{index code block, CSS styling}
+
+== Styling Code Blocks == stylingCode
+
+If you want to style listings and included code differently, `<listing>` and `<pre>` blocks
+in the input translate into a set of nested `<div>` elements that, ultimately, surround a `<pre>`.
+For example, the HML processor translates
+<block>
+`<listing>`
+`public void code(){ }`
+`</listing>`
+</block>
+to
+<block>
+`<div class="hmlListingGroup">`
+`<div class="hmlCodeAnnotations">`
+`<a name="f"></a>1<br>`
+`</div>`
+`<div class="hmlCode">`
+`<pre class="hmlPre">`
+`public void f(){ }`
+`</pre>`
+`</div>`
+`</div>`
+</block>
+and
+<block>
+`<pre>`
+`public void code(){ }`
+`</pre>`
+</block>
+to
+<block>
+`<div class="hmlPreGroup">`
+`<div class="hmlCodeAnnotations">`
+`<a name="f"></a><br>`
+`</div>`
+`<div class="hmlCode">`
+`<pre class="hmlPre">`
+`public void f(){ }`
+`</pre>`
+`</div>`
+`</div>`
+</block>
+
+The only structural difference is the `class` associated with the outermost `<div>`
+(`hmlPreGroup` for `<pre>` and `hmlListingGroup` for `<listing>`).
+HML puts the code into a `<pre>` element within that `<div>`,
+and any attribute in the original input tag passes through to that generated `<pre>` element
+(any attribute not meaningful only to HML).
+
+The `hmlCodeAnnotations` div 
+holds the line numbers and also a set of HTML `<a...>` elements that reference marked lines and declarations.
+In a `<pre>` (as compared to a `<listing>`, there will be no line numbers, though there will be a `<br>` for every line.
+For example, this input:
+
+<pre>
+<listing>
+class C
+{
+	public void f()
+	{	
+		hello();	//{=mark}
+	}
+}
+</listing>
+</pre>
+yields the following output:
+<block>
+`<div class="hmlListingGroup">`
+`<div class="hmlCodeAnnotations">`
+`<a name="C"></a>1<br>`
+`2<br>`
+`<a name="C.f"></a>3<br>`
+`4<br>`
+`<a name="mark"></a>5<br>`
+`6<br>`
+`7<br>`
+`</div>`
+`<div class="hmlCode">`
+`<pre class="hmlPre">`
+`class C`
+`{`
+`   public void f()`
+`	{`
+`       hello();`
+`   }`
+`}`
+`</pre>`
+`</div>`
+`</div>`
+</block>
+The processor puts line numbers and clutter associated with linking to specific lines into the "annotations" div, rather than mix this material into the code.
+This makes it easier to cut and paste listings, and also helps internally with the code-macro processing (since macros don't have to worry
+about markup the HML processor adds).
+
+Notice a few things in the CSS for these divs in {listing hml.head}.
+* The `display: table-cell` makes the two cells stack next to each other with no overlap (and
+  also resize at the same height).
+* The "line-height: 10pt" attribute requires an explicit line height because 
+  fonts for line numbers are different than for code. The code font uses 
+  a slightly smaller default line height, so line numbers and code don't line up.
+  Specifying height fixes this.
+
+{index tables, CSS styling}
+== Styling tables == stylingTables
+The | columnar-data mechanism ({section tabbed}) outputs an HTML table.
+For examample
+<pre>
+| a | b | c
+| d |   | e
+</pre>
+results in
+<pre>
+<table class="hmlTable">
+<tr><td valign="top"> a</td><td valign="top"> b</td><td valign="top"> c
+</td></tr>
+<tr><td valign="top"> d</td><td valign="top">&nbsp;</td><td valign="top"> e
+</td></tr>
+</table>
+</pre>
+The outermost `<table>` element is styled (using `class="hmlTable"`),
+but the inner `<td>` elements are not. 
+You can assign a style to them, however using the nested-in sytax. The following example applies a light-gray background
+to all `<td>` elements that are contained by an element with the `hmlTable` class.
+<pre>
+<style>
+	.hmlTable td { background-color: lightgray }
+</style>
+</pre>
+
+The HML processor tries to put an `&nbsp;` entity into empty cells (as it did on the second row of the foregoing example).
+It won't do that at the far right of the table, however.
+This omission is important only in situations where the cells
+have borders around them, which is not the default.
+
+For example, you can add cell borders as follows:
+<pre>
+<head>
+	<style>
+		.hmlTable td { border: 1px solid black; }
+	</style>
+</head>
+</pre>
+or if you want to eliminate the space between the cells so that you have single-line borders, use:
+<pre>
+<head>
+	<style>
+		.hmlTable { border-collapse: collapse; }
+		.hmlTable td { border: 1px solid black; }
+	</style>
+</head>
+</pre>
+
+When the rows have different numbers of columns in them, however, this input:
+
+
+<pre>
+| c1 |    | c3
+| c1 | c2 |
+</pre>
+looks like this without borders:
+
+| c1 |    | c3
+| c1 | c2 |
+
+However, if you have borders, you end up with this (because the third cell on the second row doesn't have an `&nbsp;` in it):
+
+<table border="1">
+<tr><td>c1</td><td>&nbsp;</td><td>c3</td> </tr>
+<tr><td>c1</td><td>c2</td></tr>
+</table>
+
+You can solve the problem in one of two ways.
+Either put an explicit non-breaking space in the missing cell:
+
+<pre>
+| c1 |    | c3
+| c1 | c2 | []
+</pre>
+
+or put an explicit column marker at the end of every row:
+
+<pre>
+| c1 |    | c3	|
+| c1 | c2 | 	|
+</pre>
+
+both of which give you
+
+<table class="hmlTable" border="1">
+<tr><td>c1</td><td>&nbsp;</td><td>c3</td></tr>
+<tr><td>c1</td><td>c2</td><td>&nbsp;</td></tr>
+</table>
+
+== Styling the table of contents == tocStyling
+
+The table of contents is laid out as follows:
+<pre>
+<div style="width:6in;" class="hmlToc">
+<div class="hmlTocTitle">Contents</div>
+<div class="hmlTocLev1"><a href="#hmlContents0">1.  Section One</a></div>
+<div class="hmlTocLev2"><a href="#hmlContents1">1.1  Sub-sectionOne</a></div>
+<div class="hmlTocLev1"><a href="#hmlContents2">2.  Section Two</a></div>
+...
+</div>
+</pre>
+Where the heading level is specified in the class name `hmlTocLev0`, `hmlTocLev1`, etc. (`hmlTocLev0` corresponds to an `<h0>`, `hmlTocLev1` to an `<h1>`, etc.)
+
+A `<div class="hmlToc">` surrounds the entire table.
+If you specify attributes in the original `<toc>` tag (including a class
+name), they  end up in this `<div>` element.
+
+A `<div class="hmlTocTitle">` surrounds the title (the contents of the `<toc>Title</toc>`
+element).
+
+A `<div class="hmlTocLevel`{i N}`">` surrounds each Table-of-contents entry
+(where {i N} is the heading level---1 for both `<h1>` and `<h0>`
+headings, 2 for `<h2>` headings, 3 fro `<h3>` headings, and so on).  //</h3></h2></h0></h1>
+
+To eliminate all headings at a particular level from the table of contents,
+restyle the associated element to not print.
+For example, remove all heading levels from 4 up with:
+<pre>
+<head>
+	<style>
+		.hmlTocLev4{ display:none; } 
+		.hmlTocLev5{ display:none; } 
+		.hmlTocLev6{ display:none; } 
+		.hmlTocLev7{ display:none; } 
+		.hmlTocLev8{ display:none; } 
+		.hmlTocLev9{ display:none; } 
+	</style>
+<head>
+</pre>
+The HML processor also provides anchors around all headings to serve as targets to the table-of-contents links.
+(These anchors are not generated if the heading element has a `toc="no"` attribute, however.)
+If your original heading has a label, as in:
+<pre>
+= heading = myLabel
+</pre>
+or
+<pre>
+<h1 label="myLabel">heading</h1>
+</pre>
+then the generated anchor uses that label:
+<block>
+`<a name="myLabel"> ... </a>`
+</block>
+If you don't specify a label, then the processor supplies one:
+<block>
+`<a name="hmlContents`_N_`"> ... </a>`
+</block>
+where {i N} is an arbitrary number.
+This number changes if you add sections, etc., so it's not a good idea to actually use it for anything.
+It will appear in the browser's title bar when you use the table-of-contents link to get to a section of your document, however,
+so if you don't want anybody to see these machine-generated anchors, provide explicit labels in your heading tags.
+
+=== Styling Unnumbered Sections in a Numbered Document === styling-mixed-headings
+
+The current document uses both `<h0>` (for the Parts, End Notes, and Index) and `<h1>` (for the numbered sections) headings.
+That works fine in the sense that an `<h0>` doesn't impact the section numbering at all.
+The unnumbered headings are styled a bit differently than the numbered ones, however. That's easy to do in the table of contents, since the `<h0>` headings use
+the `hmlTocLevel0` class. In the main text, you need to specify a class explicitly. Here's how it's done in the current document:
+
+,	<h0 class="part"> Part I: Core Features</h0>
+,	<head>
+,		<style>
+,		.hmlTocLev0 { margin-top: .5em; margin-bottom: .5em; font-weight: bold; font-size: 12pt; }
+,		.part		{ margin-top: .5in; margin-bottom: .5in; font-weight: bold; font-size: 20pt; }
+,		</style>
+,	</head>
+<head>
+	<style>
+	.hmlTocLev0 { margin-top: .5em; margin-bottom: .5em; font-weight: bold; font-size: 12pt; }
+	.part		{ margin-top: .5in; margin-bottom: .5in; font-weight: bold; font-size: 20pt; }
+	</style>
+</head>
+
+== Modifying endnote appearance and behavior == endnoteLayoutAndBehavior
+
+This input
+,	Text<note>The note.</note>
+,	<endNotes>
+,	Title
+,	</endNotes>
+
+creates This output
+
+,	Text<span class="hmlNote"><a name="hmlRef-1" id="hmlRef-1" href="#hmlNote1">1</a></span>
+,	<div  class="hmlNotes">
+,	
+,	Title
+,	<div class="hmlNoteGroup" id="hmlNote-1"><div class="hmlNoteRef"><a name="hmlNote1" href="#hmlRef-1">1</a></div><div class="hmlNoteBody" id="hmlNoteBody-1">The note.</div></div>
+,	</div>
+
+There are a few things to notice here.
+First of all, the footnote reference is surrounded with a `<span class="hmlNote">` element, so you can style it.
+The reference mark down in the note itself is surrounded by a `<div class="hmlNoteRef">`,
+so it can also be styled (as can the note text, which has the class `hmlNoteBody`).
+
+The popup behavior of the note is implemented with a bit of JavaScript ({listing hml.head}, {line notePopUp}).
+To eliminate the popup behavior for all your documents (whereupon the note reference is a hyperlink to the note text),
+just remove the `<script>` element from _hml.head_.
+If you want to remove the popup behavior for a single document only, put the following `<script>` element into your document:
+,	<script>
+,	popupNote = function(){};
+,	</script>
+
+== Styling the index == index-layout
+
+{index index, styling}
+Index entries are organized as follows (formatting may vary):
+<block>
+`<div class="hmlIndex">`
+`    `{i Optional title specified in <index> element.}
+`<div class="hmlTopics">`
+`	<div class="hmlTopicGroup">`
+`		<div class="hmlTopic">`{i topic}`</div>`
+`		<div class="hmlTopicLocationGroup">`
+`			<a class="hmlTopicLocation" href="#locationMarker1">1,</a>`
+`			<a class="hmlTopicLocation" href="#locationMarker2">2</a>`
+`           `...
+`		</div>`
+`	</div>`
+`    `...
+`</div></div>`
+</block>
+The `hmlIndex` div contains both the title and the actual index.
+The default style for `hmlTopics` calls for 2-column output, and each `hmlTopic` is in boldface.
+
+== Processing order ==
+
+The processor makes several passes through the input---each pass works on the output of the
+previous pass. The logical ordering of the passes is:
+
+# `<include>` and `<import>` elements;
+# code snipets;
+# text-block macros;
+# `<listing>` and `<pre>` elements (including comma-prefixed lines);
+# code-block macros;
+# table, figure, and listing titles; headings;
+# reference-level macros;
+# references to tables, listings, figures, and headings
+# table-of-contents insertion.
+
+This order matters only when you start defining your own macros. 
+For example, the processor expands includes before processing macros, so a macro that expands to an `<include>` element won't work.
+
+</ol>
+
+{index vim}
+=/ HML and _vim_ =
+
+HML is best written in a programmer's editor like {i vim},
+which can handle straight-ASCII text without adding idiosyncratic modifications.
+If you use vim, you can
+keep a browser window open next to the vim editor window.
+On each save of the source file, _vim_ can run the HML processor automatically,
+a simple browser refresh after writing immediately shows the new version.
+To make vim do that, add the following line to your {i .vimrc} file:
+<pre>
+  autocmd BufWritePost *.hml silent! !/Users/allen/bin/hml <afile>
+</pre>
+{i /Users/allen/bin/hml} is the path to a shell script that executes HML ({listing hmlscript}).
+The `!silent` tells vim to hide the output from the script.
+Removing the `!silent` allows vim to display any error messages,
+but vim will now force you to hit the _Enter_ after every write operation,
+which is annoying.
+The _hml_ script in {listing hmlscript} solves the problem on a mac
+by using the Mac's "say" command to sound an audio alert in the event of an error.
+You can do something similar in Ubuntu, at least, with
+<pre>
+echo "Found errors" | espeak
+</pre>
+(_espeak_ should be installed by default, but you can get it from [http://espeak.sourceforge.net/]).
+In the Windows world, you can play a sound file from inside a batch file with:
+<pre>
+C:\Windows>start C:\Windows\Media\tada.wav
+</pre>
+or run Media Player directly:
+<pre>
+mplay32 /play /close c:\windows\media\chimes.wav
+</pre>
+
+<include label="hmlscript" src="/Users/allen/bin/hml" title="">
+
+{index log4j}
+=/ HML and Log4j =
+
+The HML processor uses _log4j_ to print debugging diagnostics. If you don't know what
+that means, don't worry, because diagnostic printing is turned off by default.
+
+If you {i do} use _log4j_, and your local default configuration file enables logging at the DEBUG level or lower,
+diagnostic messages appear every time the HML processor runs.
+To turn off those messages, put a
+<pre>
+log4j.logger.com.holub=fatal
+</pre>
+in your _log4j.properties_, or put the following in _log4j.xml_ if you use an xml configuration.
+<pre>
+<logger name="com.holub">
+	<level value="fatal">
+</logger>
+</pre>
+
+= Multiple output files
+
+{index --out}
+{index -o}
+You can specify one or more output files.
+Multiple files are useful for long
+documents like books, where the output goes to individual per-chapter files.
+The {i --out file} (or {i -o file}) command-line argument tells the processor to change the
+output file to a new file. All subsequent output goes to the new file.
+The {i --out} directives are position dependent.
+
+For example, the following command processes chapter 1 ({i ch1.hml})
+and sends the output to `ch1.html`,
+then it processes chapter 2 ({i ch2.hml}) and sends the output to `ch2.html`.
+
+,	> java -jar hml.jar --out ch1.html ch1.hml --out ch2.html ch2.hml
+
+Use {i --out} (rather than process each file independently)
+when the second chapter contains a
+symbolic reference to a listing, figure, or table in Chapter 1,
+or if Chapter 2 references a section in Chapter 1 by section number.
+Note that this mechanism doesn't work for intra-file forward references---you can't
+reference a file the processor hasn't processed yet. 
+
+The processor _can_ handle forward references within a file. You can symbolically
+reference a listing pulled into the document later on in the same input file,
+for example. You can't reference a listing in an input file
+that hasn't yet been processed, however.
+
+All output from processing files listed to the left of the first {i --out}
+directive goes to standard output.
+
+
+{index configuration}
+= Appendix A. Configuration = config
+
+The distribution file[---]{i hml.jar} includes a default set of configuration files (_hml.head_, _hml.tail_, _hml.macros_).
+The HML processor uses these versions by default.
+
+The HML output file contains the contents of {i hml.head}, followed by the processed input file, followed by the contents of {i hml.tail}.
+Default definitions for all HML's CSS styles are in {i hml.head},
+along with the `DOCTYPE`, `<head>`, `<html>`, and `<body>` tags.
+The `</body></html>` is in {i hml.tail}.
+
+The various hml macros are defined in {i hml.macros}.
+
+You may provide custom versions of these files if you like.
+The best way to do that is use the default files as a template.
+Get the default versions by copying hml.jar to hml.zip and 
+unpacking the hml.zip with an archive utility.
+On Mac or Windows, just double click a .zip file to open it. 
+The root directory of the unpacked archive contains the configuration files.
+
+The HML processor looks for customized configuration files before it loads
+the defaults in the jar file, so you don't need to replace the default versions in
+the .jar file. Just provide the custom versions somewhere in the file system.
+
+The easiest way to specify an arbitrary location for a customized
+configuration files is on the java command line with a `-D` command-line switch:
+<pre>
+java "-DCONFIG=/path/to/my/config/folder" -jar hml.jar myInputFile > myOutputFile
+</pre>
+Be sure to specify the folder that contains the config files, not the
+full path to a specific file.
+
+If you don't use the `-D` mechanism,
+HML looks for configuration files first in
+the directory that the _CONFIG_ environment variable specifies.
+<note mark="\*\*">
+In Windows, set environment variables from your System dialog.
+(Find instructions for Windows 7 [https://kb.wisc.edu/cae/page.php?id=24500 here]).
+On the Mac, add a line to the {i .profile} or {i .bashrc} file in your home directory.
+This can be complicated. A discussion of how to do it is
+[http://stackoverflow.com/questions/7501678/set-environment-variables-on-mac-os-x-lion here]).
+</note>
+Then, if
+_CONFIG_ is not set, the processor looks in the {i ~/config} directory
+(that is, in the {i config} subdirectory of your home directory),
+then it searches the places specified in _CLASSPATH_ environment variable
+that's used by Java.
+
+== Changing the way comments are processed == comment-config
+
+At present, you cannot modify the automatic-tagging feature to work with a language
+other than Java. (That's definitely on the to-do list.)
+
+However, you _can_ change the way that comments work if your language
+doesn't use a `/*...*/`, `//`, or `#` for comments. You'll note that the current
+document doesn't change anything, so example regular expressions that contain a `#` are
+actually formatted incorrectly. The `#` in the expression is treated as a comment.
+I could follow the instructions in the current section to remove the # from consideration
+as a comment delimiter or require the # to be the first nonwhite character on the line (but I didn't).
+
+Here's how to change the comment convention to use a `--` instead of a `//` or `#`, and
+a `(*...*)` instead of a `/*...*/`.
+First, you'll need to tell the HML processor what a bang comment should
+look like. Do that by providing a `<`[!]`config>` element
+<note>
+The `<`[!]`config>` elements are processed very early, long before code blocks and
+snippets are processed (but after `<import>` statements are processed),
+so if you're writing about HML for some reason, you cannot
+protect the string `<`[!]`config>` by treating it as code.
+</note>
+that specifies a `bangComment` variable. You can put the`<`[!]`config>` element 
+anywhere in your document proper
+or pull in a file that contains the directive using an `<import...>` statement.
+(you cannot put it into hml.head, however).
+
+The element should look like this:
+<block>
+	`<`[!]`config>`
+	`bangComment=--!`
+	`<`[!]`/config>`
+</block>
+The `--!` is actually a regular expression, though it's a pretty boring one.
+If you define a more complicated expression, be careful not to use any
+capturing groups in it. Use `(?: ... )` for grouping.
+
+The next step is to modify the comment-related code macros. The defaults
+are defined as follows in {listing hml.macros} ({line commentMacros} and following):
+
+<include src="/Users/allen/config/hml.macros"
+		 from="#start-comment-macros"
+		 to="#end-comment-macros"
+		 line-numbers="false"
+		 remove-mark="true">
+
+These first two of these macros are in charge of deleting empty comments from the listings in
+both the `/*...*/` and `//` form. The second of these is a little tricky. It removes
+the comment only if there's text to the left of the `//`. That way, you can do something like
+this:
+,	// ...some text
+,	//
+,	// some more text...
+without the comment being deleted. However, a line like
+<block>
+`f();  //`
+</block>
+is transformed to
+,	f(); //
+
+<head>
+<style>
+.em { font-weight:bold; color: red; }
+</style>
+</head>
+
+The second group of macros wrap the comments in `<span>` elements that format them properly.
+The relevant part of the regular expression is:
+<block>
+`(?:/`[!]`/|(?<!&)#)`
+</block>
+which is a non-capturing group that matches either a `//` or a `#` that's not preceded by an `&`.
+Modify the macros to recognize `--` as the comment delimiter by replacing that part of the regular expression.
+Similarly, change the `/\*` to a `\(\*` to handle the replacement multiple-line-comment syntax.
+Here's a `<macro>` element that makes those changes:
+<block>
+`<macro>`
+`code: '\(\*\\s*\*\)''DOTALL|MULTILINE`
+`code: '^([ \t]*[^ \t/].*?)[ \t]*--[ \t]*$'$1'MULTILINE`
+
+`code: '\(\*.*?\*\)'<span class=\"hmlComment\">$0</span>'DOTALL|MULTILINE`
+`code: '--.*'<span class=\"hmlComment\">$0</span>`
+`</macro>`
+</block>
+Include this `<macro>` element in the same file that holds the `<`[!]`config>` element and `<import>` that file,
+or alternatively, make the change in your local version of `hml.macros`.
+If you do the former, the original macros will still be active in addition to the new macros you've just defined.
+
+== Configuration Files
+
+The following listings are the default configurations at the time of this writing.
+These are all in the top-level folder of the _hml.jar_ file.
+(Again, copy _hml.jar_ to _hml.zip_ and unzip it to examine the actual files.) 
+
+{anchor listings}
+<include src="~/config/hml.head" title="">
+<include src="/Users/allen/config/hml.tail" title="">
+
+// first-line="1" overrides line-number continuation from the previous <include> of this file.
+<include src="/Users/allen/config/hml.macros" title="" first-line="1">
+
+<endnotes>
+= Notes = notes
+</endnotes>
+
+<index>
+= Index = index
+</index>

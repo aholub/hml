@@ -1,0 +1,441 @@
+# 			DON'T MODIFY THIS FILE UNLESS YOU KNOW WHAT YOU'RE DOING!
+#
+# In particular, you need to know regular expressions thoroughly. I
+# recommend reading Jeffrey Friedl's book "Mastering Regular Expressions:"
+#
+#	http://www.amazon.com/gp/product/0596528124/ref=as_li_ss_tl?ie=UTF8&camp=1789&creative=390957&creativeASIN=0596528124&linkCode=as2&tag=alleiholuasso
+# 
+# The regular expressions in this file follow the Java conventions (which are very similar to the Perl
+# conventions) described here:
+#
+# 	http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html
+#
+# Regular expressions are notoriously difficult to both program and debug. I recommend running a full test
+# after every change, no matter how small. All the macros in this file are tested at the Java level
+# by the MacroTest jUnit test. ****** IF YOU CHANGE A MACRO IN THIS FILE, CHANGE THE JUNIT TEST TOO! *****
+# Running the documentation file (hmldoc.hml) is also not a bad boundary-layer
+# test, since it uses every feature of the system.
+#
+# Blank lines, and all lines that start with a # are ignored, as is all text that follows a ##
+#
+# None of the macros in this file are applied to code: they have no effect within
+# a <pre>...</pre>, <listing>...</listing>, or `code` block.
+#
+# Macros are expanded in the order they appear, which is sometimes important.
+# For example, the character-escape macros (\\, \{, etc.) are defined very
+# early so that they'll be applied before any of the macros that might
+# use those characters.
+#
+# If you introduce a new macro, make sure that it doesn't conflict with an existing one.
+# None of the macros in this file are ambiguous. That is, a given input string will not
+# be recognized by more than one of the macros defined here.
+#
+# Macros definitions take the form:
+#
+# 	    /regex/replacement/flags
+#
+# The first character is used as the delimiter, but you can't use a space or tab as a delimiter.
+# The flags are standard java Pattern-class flags, and you can OR them together (e.g. MULTILINE|DOTALL).
+# Note that you must specify MULTILINE for ^ and $ to work and DOTALL
+# if you want a . to match newlines.
+#
+# The following escape sequences are recognized in replacement-text strings: \t \b \n \r \f 
+# All other characters are treated literally (so you don't have to use \\ to get a backslash
+# into a replacement string, and you don't have to escape quote marks).
+#
+# The following nonstandard variables can also be used in your replacement text:
+#
+# %(timestamp)	Full timestamp for "now"
+# %(month)		Month (1-12)
+# %(day)		Day of the month
+# %(month)		Month in English
+# %(day)		day of the week in English
+# %(year)		year (e.g. 2013)
+# %(hr)			hour of the day (0--23)
+# %(min)		minute of the hour (0-60)
+# %(sec)		second of the minute (0-60)
+#
+# Use \% to put any of the above into your replacement text as literals.
+#----------------------------------------------------------------------
+# 	The following prefixes can introduce macros (eg: code: /regex/repl/flags)
+#
+# 	text:	Macro is expanded in text blocks only.
+# 	code:	Macro is expanded in code blocks only.
+# 	ref:	(not implemented, yet) Macro is expanded in a reference-expansion pass that occurs towards the end of
+# 			processing only (after all listings are processed). Macro is expanded in
+#			both text and code!
+#----------------------------------------------------------------------
+
+# Handle escaped characters. With the exception of backquote and open brace,
+# all of these are restored to their original form by the post-macro processing
+#
+`\\\\`\&#92;`
+`\\\|`\&#124;`
+`\\\[`\&#91;`
+`\\\]`\&#93;`
+`\\\{`\&#123;`
+`\\\}`\&#125;`
+`\\\*`\&#42;`
+`\\\^`\&#94;`
+`\\\_`\&#95;`
+|\\`|\&#96;|
+
+`&(?!\#?[a-zA-Z0-9]+;)|&$`&amp;`MULTILINE
+
+# Comments. Note that the HML ... is handled by Hml.expand()
+# so it can span a <pre>...</pre> or <listing>...</listing> element. Macros are handled
+# in a normal Pass, though there scope is limited to a single TEXT block.
+
+# A C-style end-of-line comment. First handle all real comments, but
+# don't touch \//. Then replaces the \// with a //.
+`(^\s*(?<![\\:])//.*\n)|(\s*(?<![\\:])//[^\n]*)``MULTILINE|DOTALL
+`\\//`//`
+
+# An HML comment. replaced with ellipsis
+`\[\*.*?\*\]`...`DOTALL
+
+`\[\]`&nbsp;&nbsp;`
+`\[#\]`&nbsp;&nbsp;&nbsp;`
+`\[#\#\]`&nbsp;&nbsp;&nbsp;&nbsp;`
+`\[#\#\#\]`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`
+`\[#\#\#\#\]`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`
+`\[#\#\#\#\#\]`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`
+`\[#\#\#\#\#\#\]`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`
+`\[#\#\#\#\#\#\#\]`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`
+`\[#\#\#\#\#\#\#\#\]`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`
+
+`^-+$`<hr class="hmlRule">`MULTILINE`
+
+`<<`\&laquo;`
+`>>`\&raquo;`
+
+# Angle brackets. Don't map < or > in HTML/XML elements.
+# This expression is a kluge, but using negative look-behind to protect the trailing >
+# fails. That is, the following expression fails at the final {0,16}:
+#        `(?<!<[a-zA-Z]\w{1,32}(\s{1,32}\w{1,32}=".{0,128}"){0,16})>`\&lt;`MULTILINE|DOTALL)
+# This appears to be a bug in Java, not in the expression, but who knows? This stuff is complicated!
+# Instead of look-behind, protect the angle brackets in an HTML element by mapping them to
+# entities, process any brackets that don't form elements, then put back the ones we protected.
+#
+# Note that the last two macros (which put things back) don't display properly in HTML. Here's
+# a version with an extra space after the ampersand that's not in the real definition.
+#     '& #60;'<'
+#     '& #62;'>'
+#     '& #38;'\&'
+#
+`(?<!\\)<(https?://.*?(?<!\\))>`&#60;$1&#62;`MULTILINE|DOTALL
+`(?<!\\)<(/?[\p{Alnum}_-]+(\s+\w+=".*?")*)\s*(?<!\\)>`&#60;$1&#62;`MULTILINE|DOTALL
+`<=`\&le;`
+`>=`\&ge;`
+`<-`&#60;strong&#62;&larr;&#60;/strong&#62;`
+`->`&#60;strong&#62;&rarr;&#60;/strong&#62;`
+`\\?<`\&lt;`
+`\\?>`\&gt;`
+`&#60;`<`
+`&#62;`>`
+
+`(?<=[a-zA-Z])---(?=[a-zA-Z])`\&mdash;`
+`(?<=[0-9])--(?=[0-9])`\&ndash;`
+`\[---\]`\&mdash;`
+`\[--\]`\&ndash;`
+`\.\.\.`\&hellip;`
+
+`\([rR]\)`\&reg;`
+`\([cC]\)`\&copy;`
+`\[(tm|TM)\]`\&trade;`
+
+`(\+-)|(\+/-)|(-\+)`\&plusmn;`
+`\[\*\]`\&times;`
+`\[/\]`\&divide;`
+`\[\+\]`\&plus;`
+`\[-\]`\&minus;`
+`\[!=\]`\&ne;`
+`!=`\&ne;`
+
+`1/4`\&frac14;`
+`1/2`\&frac12;`
+`3/4`\&frac34;`
+
+`\^1`\&sup1;`
+`\^2`\&sup2;`
+`\^3`\&sup3;`
+`\^o`\&deg;`
+
+`\[SS\]`\&sect;`
+`\[dagger\]`\&dagger;`
+`\[Dagger\]`\&Dagger;`
+
+`\[Delta\]`\&Delta;`
+
+# Accented vowels
+/\[a``\]/&agrave;/
+/\[a'\]/&aacute;/
+/\[a\^\]/&acirc;/
+/\[e``\]/&egrave;/
+/\[e'\]/&eacute;/
+/\[e\^\]/&ecirc;/
+/\[i``\]/&igrave;/
+/\[i'\]/&iacute;/
+/\[i\^\]/&icirc;/
+/\[o``\]/&ograve;/
+/\[o'\]/&oacute;/
+/\[o\^\]/&ocirc;/
+/\[u``\]/&ugrave;/
+/\[u'\]/&uacute;/
+/\[u\^\]/&ucirc;/
+
+/\[A``\]/&Agrave;/
+/\[A'\]/&Aacute;/
+/\[A\^\]/&Acirc;/
+/\[E``\]/&Egrave;/
+/\[E'\]/&Eacute;/
+/\[E\^\]/&Ecirc;/
+/\[I``\]/&Igrave;/
+/\[I'\]/&Iacute;/
+/\[I\^\]/&Icirc;/
+/\[O``\]/&Ograve;/
+/\[O'\]/&Oacute;/
+/\[O\^\]/&Ocirc;/
+/\[U``\]/&Ugrave;/
+/\[U'\]/&Uacute;/
+/\[U\^\]/&Ucirc;/
+
+`\[timestamp\]`%(timestamp)`
+`\[Month\]`%(Month)`
+`\[Day\]`%(Day)`
+`\[month\]`%(month)`
+`\[day\]`%(day)`
+`\[year\]`%(year)`
+`\[hr\]`%(hr)`
+`\[min\]`%(min)`
+`\[sec\]`%(sec)`
+
+# boxes
+
+`<box>`<div class="hmlBox">`
+`</box>`</div>`
+
+# ordering matters here. Do the three-quote versions first.
+/```/\&ldquo;/
+/'''/\&rdquo;/
+/``(?!`)/\&lsquo;/
+/''(?!')/\&rsquo;/
+
+# The &#95; is the _ entity. It's turned back into an _ by the restoration macros at the end
+# of the current file.
+`\{amazon\s+(\S+)\s+([^}]*)\}`<a href="http://www.amazon.com/exec/obidos/ASIN/$1/alleiholuasso" target="&#95;blank"><em>$2</em></a>`
+
+# _italic_ *bold*
+
+`^\*(\S.+?)\*$`<strong>$1</strong>`MULTILINE|DOTALL
+`^\*(\S.+?)\*(?=[\s\p{Punct}])`<strong>$1</strong>`MULTILINE|DOTALL
+`(?<=[\s\p{Punct}])\*(\S.+?)\*(?=[\s\p{Punct}])`<strong>$1</strong>`MULTILINE|DOTALL
+
+`^_(.+?)_$`<em>$1</em>`MULTILINE
+`^_(.+?)_(?=[\s"'!,\.:;\?>\]}\)])`<em>$1</em>`MULTILINE
+`(?<=[<>\[{\(\s])_(.+?)_(?=[\s"'!,\.:;\?<>\]}\)])`<em>$1</em>`
+
+# subscript/superscript. Must follow circumflex accents to avoid
+# ambiguity. Do multi-word forms first to avoid ambiguity.
+# Must also follow _italic_ macro.
+
+`(?<![\s\\])\^(\p{Alnum}+)`<sup style="hmlSuperscript">$1</sup>`
+`\{\^\s*(.*?)\}`<sup style="hmlSuperscript">$1</sup>`DOTALL
+
+`(?<=[\p{Alnum}\.;"'>\)}\]])__(\S+)`<sub style="hmlSubscript">$1</sub>`
+`\{_\s*(.*?)\}`<sub style="hmlSubscript">$1</sub>`DOTALL
+
+# other font-related macros
+
+`\{b\s+(.*?)\}`<strong>$1</strong>`DOTALL|MULTILINE
+`\{i\s+(.*?)\}`<em>$1</em>`DOTALL|MULTILINE
+`\{bi\s+(.*?)\}`<strong><em>$1</em></strong>`DOTALL|MULTILINE
+`\{ci\s+(.*?)\}`<code><em>$1</em></code>`DOTALL|MULTILINE
+`\{cb\s+(.*?)\}`<code><strong>$1</strong></code>`DOTALL|MULTILINE
+`\{u\s+(.*?)\}`<u>$1</u>`DOTALL|MULTILINE
+`\{x\s+([a-zA-Z0-0\-]+)\s+(.*?)\}`<span class="$1">$2</span>`DOTALL|MULTILINE
+`\{s\s+(.*?)\}`<span style="text-decoration:line-through;">$1</span>`DOTALL|MULTILINE
+`\{c\s+(.*?)\}`<code>$1</code>`DOTALL|MULTILINE
+
+`\{anchor\s+(.*?)\}`<a name="$1"></a>`DOTALL
+
+# Bullet and number lists lists:
+# Line items in both lists. After this pass, line items are all introduced by (^*<li>).
+# 
+`^([#*]|(\d+\.))(.*\n) \
+	(([ \t\x0B\f]+.*\n)*) \
+	`$1<li>$3$4</li>\n \
+`MULTILINE
+#
+# Now, wrap the whole list in the appropriate element.
+#
+`^(\*<.*?\n)\n`<ul>\n$1</ul>\n`MULTILINE|DOTALL
+`^((#|\d+\.)<.*?\n)\n`<ol>\n$1</ol>\n`MULTILINE|DOTALL
+#
+#	Finally, get rid of the original list-item markers
+#
+`^(\*<)`<`MULTILINE
+`^((#|\d+\.)<)`<`MULTILINE
+
+# definition lists work pretty much like bullet lists, except ; introduces
+# the dt and : the dd.
+
+`^(:)(.*\n) \
+	(([ \t\x0B\f]+.*\n)*)  \
+	`$1<dd>$2$3</dd>\n \
+`MULTILINE
+
+`^(;)(.*\n) \
+	(([ \t\x0B\f]+.*\n)*)  \
+	`$1<dt>$2$3</dt>\n \
+`MULTILINE
+
+`^([;:]<.*?\n)\n`<dl>\n$1</dl>\n`MULTILINE|DOTALL
+`^([:;]<)`<`MULTILINE
+							
+# Alternative table macros: [(] [|] [)], etc. Do these before Columnar-output
+# macros (which interpret the | in [|] specially
+
+`(?<=\[[\|\(]\])(\s*)(?=\[[\|\)]\])` \&nbsp; `	## Replace empty table cells with &nbsp;
+`\[\(([^\]]*)\]`<tr><td valign="top"$1>` 		## [(]
+`\[\|([^\]]*)\]`</td><td valign="top"$1>` 		## [|]
+`\[\)\]`</td></tr>` 							## [)]
+
+# Columnar output/simple tables
+#
+# Get rid of the optional trailing bars (at the end of a row): all bars
+# that are followed by a blank line, or are not followed by an indented continuation line
+
+`\|([ \t\f\x0B]*\n\n)`$1`MULTILINE
+`\|([ \t\f\x0B]*\n\S)`$1`MULTILINE
+
+# Add &nbsp into empty table cells
+`\|([ \t\f\x0B]*(\n[ \t\f\x0B]*)?)\|`|&nbsp;$1|`MULTILINE
+
+# horizontal separators
+`^\s*\|-\s*(\d*).*`<tr><td class=\"hmlTableLine\" colspan="$1">&nbsp;</td></tr>`MULTILINE
+
+# Rows
+`^(\|)(.*\n) \
+	(([ \t\x0B\f]+.*\n)*)  \
+	`|<tr><td valign="top">$2$3</td></tr>\n \
+`MULTILINE
+
+# the entire table
+`^(\|<.*?\n)\n`<table class="hmlTable">\n$1</table>\n\n`MULTILINE|DOTALL
+`^\|<tr>`<tr>`MULTILINE
+
+# column separators
+`\s*\|`</td><td valign="top">`
+
+
+# {link...}-shorthand macros ({link} itself is handled in the code)
+# Do this late in the file so that other macros that use square brackets.
+# are expanded first.
+
+`\[(?!!)(\S+?)((\s[^\]]+)*?)\]`{link $1 $2}`MULTILINE|DOTALL
+`(?<!\\)<https?://(\S+?)(?<!\\)>$`{link $1}`MULTILINE|DOTALL
+
+# Now do the {link itself}, in order: Note that all lower-case strings
+# are accepted as a protocol.
+#
+# {link ./url}             // remove ./
+# {link ./url text...}     // remove ./
+# {link #url}
+# {link #url text...}
+# {link http://url}
+# {link http://url text...}
+# {link url}               // add http
+# {link url text...}       // add http 
+
+`\{link\s*\./(\S*)\s*\}`<a target="_blank" href="$1">$1</a>`
+`\{link\s*\./(\S*)\s*([^\s\}].*?)\}`<a target="_blank" href="$1">$2</a>`
+
+`\{link\s*#(\S*)\s*\}`<a href="#$1">$1</a>`
+`\{link\s*(#\S*)\s*([^\s\}].*?)\}`<a href="$1">$2</a>`
+
+`\{link\s*([a-z]+://\S*)\s*\}`<a target="_blank" href="$1">$1</a>`
+`\{link\s*([a-z]+://\S*)\s*([^\s\}].*?)\}`<a target="_blank" href="$1">$2</a>`
+
+`\{link\s*(\S*)\s*\}`<a target="_blank" href="http://$1">$1</a>`
+`\{link\s*(\S*)\s*([^\s\}].*?)\}`<a target="_blank" href="http://$1">$2</a>`
+
+
+# Index
+`\{index\s*(.*?)\s*,\s*(.*?)\s*\}`<index-entry topic="$1">$2</index-entry>`
+`\{index\s*(.*?)\s*\}`<index-entry topic="$1"></index-entry>`
+
+# Mediawiki-style heading aliases (with an augmentation for labels)
+# First set handles the versions with no label (that set has to be done first),
+# then handle the labeled versions
+
+`^[ \t\f\xB0]*======/?([^=]*?)=*[ \t\f\xB0]*?$`<h6>$1</h6>`MULTILINE
+`^[ \t\f\xB0]*=====/?([^=]*?)=*[ \t\f\xB0]*?$`<h5>$1</h5>`MULTILINE
+`^[ \t\f\xB0]*====/?([^=]*?)=*[ \t\f\xB0]*?$`<h4>$1</h4>`MULTILINE
+`^[ \t\f\xB0]*===/?([^=]*?)=*[ \t\f\xB0]*?$`<h3>$1</h3>`MULTILINE
+`^[ \t\f\xB0]*==/?([^=]*?)=*[ \t\f\xB0]*?$`<h2>$1</h2>`MULTILINE
+`^[ \t\f\xB0]*=/([^=]*?)=*[ \t\f\xB0]*?$`<h1>$1</h1>`MULTILINE
+`^[ \t\f\xB0]*=([^=]*?)=*[ \t\f\xB0]*?$`<h0>$1</h0>`MULTILINE
+
+`^[ \t\f\xB0]*======/?([^=]+?)(?:=+)[ \t\f\xB0]*(\S+).*?$`<h6 label="$2">$1</h6>`MULTILINE
+`^[ \t\f\xB0]*=====/?([^=]+?)(?:=+)[ \t\f\xB0]*(\S+).*?$`<h5 label="$2">$1</h5>`MULTILINE
+`^[ \t\f\xB0]*====/?([^=]+?)(?:=+)[ \t\f\xB0]*(\S+).*?$`<h4 label="$2">$1</h4>`MULTILINE
+`^[ \t\f\xB0]*===/?([^=]+?)(?:=+)[ \t\f\xB0]*(\S+).*?$`<h3 label="$2">$1</h3>`MULTILINE
+`^[ \t\f\xB0]*==/?([^=]+?)(?:=+)[ \t\f\xB0]*(\S+).*?$`<h2 label="$2">$1</h2>`MULTILINE
+`^[ \t\f\xB0]*=/([^=]+?)(?:=+)[ \t\f\xB0]*(\S+).*?$`<h1 label="$2">$1</h1>`MULTILINE
+`^[ \t\f\xB0]*=([^=]+?)(?:=+)[ \t\f\xB0]*(\S+).*?$`<h0 label="$2">$1</h0>`MULTILINE
+
+# implicit paragraphs 
+`\n([ \t\f\x0B]*\n[ \t\f\x0B]*)+(\p{Alnum}|\[|\{|\()`\n<p>\n$2`MULTILINE
+
+# zero-width space
+/\[!\]//
+
+# Code macros are somewhat limited in what they can do, and if a code macro changes the
+# number of lines in the listing, all of the line numbering and associated HTML links
+# will be messed up. Don't do that. You can see which of of the HML mappings are done
+# here. Everything else is done by the HML processor **before** code-macro expansion
+# occurs. In particular, "bang comments" cannot be handled by macros because they can
+# change the line numbering.
+#
+
+code: '(?<!!)&(?!#(38|60|62);)'\&amp;'
+code: '!&(?!#(38|60|62);)`\&`
+code: '(?<!!)<'\&lt;'
+code: '>(?!!)'\&gt;'
+code: '!<'<'
+code: '>!'>'
+
+## {= commentMacros}
+# Macros that handle comments. The first two handle empty comments (which can
+# occur after {= xxx} marks are processed and removed. 
+# Multi-line comments (e.g. /*...*/)
+# that contain nothing but whitespace are removed entirely. Empty end of line
+# comments (e.g. //...) are removed if there's something to their left, but
+# a // that has nothing but white space on both sides of it is not removed.
+# After the empty comments are removed, other comments are surrounded by
+# a <span> that formats them differently from the rest of the code.
+#start-comment-macros
+
+code: '/\*\s*?\*/''MULTILINE
+code: '^([ \t]*[^ \t/].*?)[ \t]*(?://|(?<!&)#+)[ \t]*$'$1'MULTILINE		
+
+code: '/\*.*?\*/'<span class=\"hmlComment\">$0</span>'DOTALL|MULTILINE
+code: '(?://|(?<!&)#+[- \n=]).*'<span class=\"hmlComment\">$0</span>'MULTILINE
+
+#end-comment-macros
+# These entities are inserted in the Listing process to protect < > and & symbols
+# that it inserts from macro expansion. Now that we're done with macro expansion,
+# put them back.
+#
+# The following macros WILL NOT DISPLAY properly in the documentation (because
+# they'll be expanded)! Here are versions with a space added after the & so
+# that they'll print. That space isn't present in the actual file.
+#
+#     code: '& #60;'<'
+#     code: '& #62;'>'
+#     code: '& #38;'\&'
+
+code: '&#60;'<'
+code: '&#62;'>'
+code: '&#38;'\&'
