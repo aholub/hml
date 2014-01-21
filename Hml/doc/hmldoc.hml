@@ -137,13 +137,12 @@ This version works just fine, but you can download a newer version from Oracle.
 [http://www.java.com/en/download/faq/java_mac.xml here] for directions).
 
 Finally, download the HML processor from
-[https://holub.com/private/hml.jar here].
-The download is a standalone {i .jar} file you can put anywhere.
+[https://raw.github.com/aholub/hml/master/Hml/hml.jar]
+The download is a standalone ({i .jar}) file you can put anywhere.
 There's no need to unpack or otherwise ```install''' it.
 Similarly, the HML processor doesn't use any magic folders (e.g. "~/Library"
 on the mac) or the Windows registry. To remove it from your disk, just
 delete {i hml.jar}.
-
 
 == Running the HML processor locally ==
 
