@@ -3996,11 +3996,11 @@ These are all in the top-level folder of the _hml.jar_ file.
 (Again, copy _hml.jar_ to _hml.zip_ and unzip it to examine the actual files.) 
 
 {anchor listings}
-<include src="~/config/hml.head" title="">
-<include src="/Users/allen/config/hml.tail" title="">
+<include src="../src/hml.head" title="">
+<include src="../src/hml.tail" title="">
 
 // first-line="1" overrides line-number continuation from the previous <include> of this file.
-<include src="/Users/allen/config/hml.macros" title="" first-line="1">
+<include src="../src/hml.macros" title="" first-line="1">
 
 <endnotes>
 = Notes = notes
