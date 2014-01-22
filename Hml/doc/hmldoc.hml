@@ -1261,6 +1261,7 @@ The basic form is:
 |	`<`[!]`include src="/Users/allen/projects/sources/someFile.java">`	| (or `file="`...`"`)
 |	`<`[!]`import  href="http://www.holub.com/sources/someFile.java">`
 |	`<`[!]`import  src="~/projects/sources/someFile.java">` 			| (or `file="`...`"`)
+|	`<`[!]`import  src="../sibling/someFile.java">` 			| (or `file="`...`"`)
 </block>
 
 Include code. Import everything else.
