@@ -3917,23 +3917,23 @@ as a comment delimiter or require the # to be the first nonwhite character on th
 Here's how to change the comment convention to use a `--` instead of a `//` or `#`, and
 a `(*...*)` instead of a `/*...*/`.
 First, you'll need to tell the HML processor what a bang comment should
-look like. Do that by providing a `<`[!]`config>` element
+look like. Do that by providing a `<`[!]`HMLconfig>` element
 <note>
-The `<`[!]`config>` elements are processed very early, long before code blocks and
+The `<`[!]`HMLconfig>` elements are processed very early, long before code blocks and
 snippets are processed (but after `<import>` statements are processed),
 so if you're writing about HML for some reason, you cannot
-protect the string `<`[!]`config>` by treating it as code.
+protect the string `<`[!]`HMLconfig>` by treating it as code.
 </note>
-that specifies a `bangComment` variable. You can put the`<`[!]`config>` element 
+that specifies a `bangComment` variable. You can put the`<`[!]`HMLconfig>` element 
 anywhere in your document proper
 or pull in a file that contains the directive using an `<import...>` statement.
 (you cannot put it into hml.head, however).
 
 The element should look like this:
 <block>
-	`<`[!]`config>`
+	`<`[!]`HMLconfig>`
 	`bangComment=--!`
-	`<`[!]`/config>`
+	`<`[!]`/HMLconfig>`
 </block>
 The `--!` is actually a regular expression, though it's a pretty boring one.
 If you define a more complicated expression, be careful not to use any
@@ -3986,7 +3986,7 @@ Here's a `<macro>` element that makes those changes:
 `code: '--.*'<span class=\"hmlComment\">$0</span>`
 `</macro>`
 </block>
-Include this `<macro>` element in the same file that holds the `<`[!]`config>` element and `<import>` that file,
+Include this `<macro>` element in the same file that holds the `<`[!]`HMLconfig>` element and `<import>` that file,
 or alternatively, make the change in your local version of `hml.macros`.
 If you do the former, the original macros will still be active in addition to the new macros you've just defined.
 

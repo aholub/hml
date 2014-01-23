@@ -34,7 +34,7 @@ public class Configuration implements Filter
 	@Override
 	public void filter(Text prefix, Text body, Text suffix, BlockType type)
 	{
-		Text replacement = Tags.processElement( error, body, true, "config", "",
+		Text replacement = Tags.processElement( error, body, true, "HMLconfig", "",
 				new Handler() {
 					public Text handle( String tag, Map<String,String> arguments, String body, String context, int start  )
 					{	

@@ -1,5 +1,39 @@
 Add dropbox support.
 
-Add markdown-like table-header support ( -------, :----, ----:, :----: )
-
 Add support for languages other than Java to automatic tagging
+
+Add:
+
+	> this is
+	> a block quote
+
+Add:
+
+	| header  | header
+	| ------- | --------		
+	| cell	| cell
+
+Add
+
+	| ------- | --------		If the first row is a line, the entire
+	| header  | header			table (and all cells) are boxed. Otherwise,
+	| ------- | --------		there's no box.
+	| cell	| cell
+
+Add
+
+
+	header    | header	 | header
+	:-------: | :--------| --------:	horizontal rule, +specifies cell alignment
+	centered  | left	 | right		for remainder of table.
+
+Add
+	|:	|	:|:	:|						As a row.
+										Specifies alignment for following
+										cells, but without horizontal rule.
+										The : must be immediately ajacent
+										to a |.
+Add
+	|:	left	|						alignment for individual cells
+	|:	center	:|
+	| 	right	:|

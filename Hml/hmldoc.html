@@ -2265,15 +2265,15 @@ that contain non-alphanumeric characters. There's only one underscore in this fo
 </td><td valign="top"> (Three right-quote characters in the input.) A right double quote, not a quotation mark (&quot;). They're different in some fonts. Note that you need three of them in the input.
 </td></tr>
 
-<tr><td valign="top">		<nobr><code>[timestamp]</code></nobr>	</td><td valign="top">		Tue Jan 21 16:19:25 PST 2014	</td><td valign="top"><a name="hmlIndex-141-1"></a> Current date and time in standard form. </td></tr>
+<tr><td valign="top">		<nobr><code>[timestamp]</code></nobr>	</td><td valign="top">		Thu Jan 23 11:02:31 PST 2014	</td><td valign="top"><a name="hmlIndex-141-1"></a> Current date and time in standard form. </td></tr>
 <tr><td valign="top">		<nobr><code>[month]</code></nobr>		</td><td valign="top">		1		</td><td valign="top"><a name="hmlIndex-142-1"></a> Current Month. January = 1.</td></tr>
-<tr><td valign="top">		<nobr><code>[day]</code></nobr>			</td><td valign="top">		21		</td><td valign="top"><a name="hmlIndex-143-1"></a> Current day of the month. </td></tr>
+<tr><td valign="top">		<nobr><code>[day]</code></nobr>			</td><td valign="top">		23		</td><td valign="top"><a name="hmlIndex-143-1"></a> Current day of the month. </td></tr>
 <tr><td valign="top">		<nobr><code>[year]</code></nobr>		</td><td valign="top">		2014		</td><td valign="top"><a name="hmlIndex-144-1"></a> Current Year. </td></tr>
-<tr><td valign="top">		<nobr><code>[hr]</code></nobr>			</td><td valign="top">		4		</td><td valign="top"><a name="hmlIndex-145-1"></a> Current hour (24-hour time). </td></tr>
-<tr><td valign="top">		<nobr><code>[min]</code></nobr>			</td><td valign="top">		19		</td><td valign="top"><a name="hmlIndex-146-1"></a> Current minute </td></tr>
-<tr><td valign="top">		<nobr><code>[sec]</code></nobr>			</td><td valign="top">		25		</td><td valign="top"><a name="hmlIndex-147-1"></a> Current second </td></tr>
+<tr><td valign="top">		<nobr><code>[hr]</code></nobr>			</td><td valign="top">		11		</td><td valign="top"><a name="hmlIndex-145-1"></a> Current hour (24-hour time). </td></tr>
+<tr><td valign="top">		<nobr><code>[min]</code></nobr>			</td><td valign="top">		2		</td><td valign="top"><a name="hmlIndex-146-1"></a> Current minute </td></tr>
+<tr><td valign="top">		<nobr><code>[sec]</code></nobr>			</td><td valign="top">		31		</td><td valign="top"><a name="hmlIndex-147-1"></a> Current second </td></tr>
 <tr><td valign="top">		<nobr><code>[Month]</code></nobr>		</td><td valign="top">		January		</td><td valign="top"><a name="hmlIndex-142-2"></a> Current month in English </td></tr>
-<tr><td valign="top">		<nobr><code>[Day]</code></nobr>			</td><td valign="top">		Tuesday		</td><td valign="top"><a name="hmlIndex-143-2"></a> Current day of the week in English </td></tr>
+<tr><td valign="top">		<nobr><code>[Day]</code></nobr>			</td><td valign="top">		Thursday		</td><td valign="top"><a name="hmlIndex-143-2"></a> Current day of the week in English </td></tr>
 <tr><td valign="top">	<nobr><code>{amazon&nbsp;159059388X&nbsp;Holub&nbsp;on&nbsp;Patterns}</code></nobr>
 	</td><td valign="top">	<a href="http://www.amazon.com/exec/obidos/ASIN/159059388X/alleiholuasso" target="_blank"><em>Holub on Patterns</em></a>
 	</td><td valign="top"><a name="hmlIndex-150-1"></a><a name="hmlIndex-151-1"></a> Link to Amazon for book with indicated ISBN and title. By default,
@@ -5460,17 +5460,17 @@ as a comment delimiter or require the # to be the first nonwhite character on th
 Here's how to change the comment convention to use a <nobr><code>--</code></nobr> instead of a <nobr><code>//</code></nobr> or <nobr><code>#</code></nobr>, and
 a <nobr><code>(*...*)</code></nobr> instead of a <nobr><code>/*...*/</code></nobr>.
 First, you'll need to tell the HML processor what a bang comment should
-look like. Do that by providing a <nobr><code>&lt;</code></nobr><nobr><code>config&gt;</code></nobr> element<span class="hmlNote"><a name="hmlRef-248" id="hmlRef-248" href="#hmlNote248">15</a></span>
-that specifies a <nobr><code>bangComment</code></nobr> variable. You can put the<nobr><code>&lt;</code></nobr><nobr><code>config&gt;</code></nobr> element 
+look like. Do that by providing a <nobr><code>&lt;</code></nobr><nobr><code>HMLconfig&gt;</code></nobr> element<span class="hmlNote"><a name="hmlRef-248" id="hmlRef-248" href="#hmlNote248">15</a></span>
+that specifies a <nobr><code>bangComment</code></nobr> variable. You can put the<nobr><code>&lt;</code></nobr><nobr><code>HMLconfig&gt;</code></nobr> element 
 anywhere in your document proper
 or pull in a file that contains the directive using an <nobr><code>&lt;import...&gt;</code></nobr> statement.
 (you cannot put it into hml.head, however).
 <p>
 The element should look like this:
 <blockquote class="hmlBlock">
-<nobr><code>&lt;</code></nobr><nobr><code>config&gt;</code></nobr><br>
+<nobr><code>&lt;</code></nobr><nobr><code>HMLconfig&gt;</code></nobr><br>
 	<nobr><code>bangComment=--!</code></nobr><br>
-	<nobr><code>&lt;</code></nobr><nobr><code>/config&gt;</code></nobr><br>
+	<nobr><code>&lt;</code></nobr><nobr><code>/HMLconfig&gt;</code></nobr><br>
 </blockquote>
 The <nobr><code>--!</code></nobr> is actually a regular expression, though it's a pretty boring one.
 If you define a more complicated expression, be careful not to use any
@@ -5549,7 +5549,7 @@ Here's a <nobr><code>&lt;macro&gt;</code></nobr> element that makes those change
 <nobr><code>code:&nbsp;&apos;--.*&apos;&lt;span&nbsp;class=\&quot;hmlComment\&quot;&gt;$0&lt;/span&gt;</code></nobr><br>
 <nobr><code>&lt;/macro&gt;</code></nobr><br>
 </blockquote>
-Include this <nobr><code>&lt;macro&gt;</code></nobr> element in the same file that holds the <nobr><code>&lt;</code></nobr><nobr><code>config&gt;</code></nobr> element and <nobr><code>&lt;import&gt;</code></nobr> that file,
+Include this <nobr><code>&lt;macro&gt;</code></nobr> element in the same file that holds the <nobr><code>&lt;</code></nobr><nobr><code>HMLconfig&gt;</code></nobr> element and <nobr><code>&lt;import&gt;</code></nobr> that file,
 or alternatively, make the change in your local version of <nobr><code>hml.macros</code></nobr>.
 If you do the former, the original macros will still be active in addition to the new macros you've just defined.
 
@@ -7087,10 +7087,10 @@ This can be complicated. A discussion of how to do it is
 <a target="_blank" href="http://stackoverflow.com/questions/7501678/set-environment-variables-on-mac-os-x-lion">here</a>).
 </div></div>
 <div class="hmlNoteGroup" id="hmlNote-248"><div class="hmlNoteRef"><a name="hmlNote248" href="#hmlRef-248">15</a></div><div class="hmlNoteBody" id="hmlNoteBody-248">
-The <nobr><code>&lt;</code></nobr><nobr><code>config&gt;</code></nobr> elements are processed very early, long before code blocks and
+The <nobr><code>&lt;</code></nobr><nobr><code>HMLconfig&gt;</code></nobr> elements are processed very early, long before code blocks and
 snippets are processed (but after <nobr><code>&lt;import&gt;</code></nobr> statements are processed),
 so if you're writing about HML for some reason, you cannot
-protect the string <nobr><code>&lt;</code></nobr><nobr><code>config&gt;</code></nobr> by treating it as code.
+protect the string <nobr><code>&lt;</code></nobr><nobr><code>HMLconfig&gt;</code></nobr> by treating it as code.
 </div></div>
 </div>
 

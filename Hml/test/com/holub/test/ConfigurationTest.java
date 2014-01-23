@@ -42,9 +42,9 @@ public class ConfigurationTest
 	@Test public void testNewProperty()
 	{
 		Text input = new Text("\n",
-			"<config>",
+			"<HMLconfig>",
 			"key=value",
-			"</config>"
+			"</HMLconfig>"
 			);
 		
 		oat.filter(Text.EMPTY, input, Text.EMPTY, Filter.BlockType.TEXT);
@@ -54,9 +54,9 @@ public class ConfigurationTest
 	@Test public void testDefaultOverride()
 	{
 		Text input = new Text("\n",
-			"<config>",
+			"<HMLconfig>",
 			"key=newValue",
-			"</config>"
+			"</HMLconfig>"
 			);
 		
 		oat.supplyDefault("key", "defaultValue");
@@ -67,9 +67,9 @@ public class ConfigurationTest
 	@Test public void testDefault()
 	{
 		Text input = new Text("\n",
-			"<config>",
+			"<HMLconfig>",
 			"unusedKey=newValue",
-			"</config>"
+			"</HMLconfig>"
 			);
 		
 		oat.supplyDefault("key", "defaultValue");
